@@ -99,7 +99,7 @@ export default function RecipeEditorDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>{initial?.id ? "Edit Recipe" : "New Recipe"}</DialogTitle>
       <DialogContent sx={{ pt: 2 }}>
         <Box sx={{ display: "grid", gap: 2, mt: 0.5 }}>

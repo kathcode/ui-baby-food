@@ -14,19 +14,30 @@ import {
   Stack,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import type { Recipe } from "../types";
-import { loadRecipes, saveRecipes } from "../utils/storage";
-import RecipeEditorDialog from "../components/RecipeEditorDialog";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
-import { EmptyList } from "../components/emptyList";
+import RecipeEditorDialog from "../components/RecipeEditorDialog";
+import RecipeDetailsDialog from "../components/RecipeDetailsDialog";
 import { FoodChip } from "../components/ui/FoodChip";
 
+// 🔗 API
+import { recipesApi, type SRecipe } from "../api/recipes";
+
 export default function RecipesPage() {
-  const [recipes, setRecipes] = useState<Recipe[]>(() => loadRecipes());
+  const [recipes, setRecipes] = useState<SRecipe[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+
+  // editor state (if you still want create/edit here)
   const [editorOpen, setEditorOpen] = useState(false);
-  const [editing, setEditing] = useState<Recipe | null>(null);
+  const [editing, setEditing] = useState<SRecipe | null>(null);
+
+  // details state
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   const [snack, setSnack] = useState<{
     open: boolean;
     msg: string;
@@ -38,44 +49,100 @@ export default function RecipesPage() {
   });
   const navigate = useNavigate();
 
+  // Fetch list on mount
   useEffect(() => {
-    saveRecipes(recipes);
-  }, [recipes]);
+    let alive = true;
+    setLoading(true);
+    recipesApi
+      .list()
+      .then((res) => {
+        if (alive) setRecipes(res.items);
+      })
+      .catch((e) => {
+        if (alive) setErr(e.message || "Failed to load recipes");
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
-  const remove = (id: string) =>
-    setRecipes((rs) => rs.filter((r) => r.id !== id));
+  const remove = async (id: string) => {
+    try {
+      await recipesApi.remove(id);
+      setRecipes((rs) => rs.filter((r) => r._id !== id));
+      setSnack({ open: true, msg: "Recipe deleted", severity: "success" });
+    } catch (e: any) {
+      setSnack({
+        open: true,
+        msg: e.message || "Delete failed",
+        severity: "error",
+      });
+    }
+  };
 
   const openCreate = () => {
     setEditing(null);
     setEditorOpen(true);
   };
-  const openEdit = (recipe: Recipe) => {
+  const openEdit = (recipe: SRecipe) => {
     setEditing(recipe);
     setEditorOpen(true);
   };
   const closeEditor = () => setEditorOpen(false);
 
-  const handleSaveRecipe = (payload: {
+  const handleSaveRecipe = async (payload: {
     id?: string;
     name: string;
     description?: string;
-    items: Recipe["items"];
+    items: any[];
   }) => {
-    if (payload.id) {
-      // update existing
-      setRecipes((rs) =>
-        rs.map((r) =>
-          r.id === payload.id ? ({ ...r, ...payload } as Recipe) : r
-        )
-      );
-      setSnack({ open: true, msg: "Recipe updated", severity: "success" });
-    } else {
-      // create new
-      const newRecipe: Recipe = { id: crypto.randomUUID(), ...payload };
-      setRecipes((rs) => [newRecipe, ...rs]);
-      setSnack({ open: true, msg: "Recipe saved", severity: "success" });
+    try {
+      if (payload.id) {
+        const updated = await recipesApi.update(payload.id, {
+          name: payload.name,
+          description: payload.description,
+          items: payload.items,
+        });
+        setRecipes((rs) =>
+          rs.map((r) => (r._id === updated._id ? updated : r))
+        );
+        setSnack({ open: true, msg: "Recipe updated", severity: "success" });
+      } else {
+        const created = await recipesApi.create({
+          name: payload.name,
+          description: payload.description,
+          items: payload.items,
+        });
+        setRecipes((rs) => [created, ...rs]);
+        setSnack({ open: true, msg: "Recipe saved", severity: "success" });
+      }
+    } catch (e: any) {
+      setSnack({
+        open: true,
+        msg: e.message || "Save failed",
+        severity: "error",
+      });
+    } finally {
+      setEditorOpen(false);
     }
-    setEditorOpen(false);
+  };
+
+  // details open/close
+  const openDetails = (id: string) => {
+    setSelectedId(id);
+    setDetailsOpen(true);
+  };
+  const closeDetails = () => {
+    setSelectedId(null);
+    setDetailsOpen(false);
+  };
+
+  const handleUseRecipe = (id: string) => {
+    closeDetails();
+    navigate("/", { state: { openNewEntry: true, recipeId: id } });
   };
 
   return (
@@ -91,6 +158,12 @@ export default function RecipesPage() {
         <Typography variant="h5">Saved Recipes</Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
+            variant="outlined"
+            onClick={() => navigate("/", { state: { openNewEntry: true } })}
+          >
+            New Entry
+          </Button>
+          <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={openCreate}
@@ -100,109 +173,151 @@ export default function RecipesPage() {
         </Box>
       </Box>
 
-      {recipes.length === 0 ? (
-        <EmptyList title={"No recipes yet"}>
-          <Typography variant="body2" color="text.secondary">
-            Create a recipe with <strong>New Recipe</strong> or create an entry
-            and click <strong>Save as Recipe</strong>.
-          </Typography>
-        </EmptyList>
-      ) : (
-        <List sx={{ width: "100%" }}>
-          {recipes.map((r, idx) => (
-            <Card key={r.id} sx={{ mb: 2 }}>
-              <ListItem
-                sx={{
-                  bgcolor: idx % 2 === 0 ? "background.default" : "grey.50",
-                  "&:hover": { bgcolor: "action.hover" },
-                  transition: "background-color 0.2s ease",
-                  borderRadius: 2,
-                  boxShadow: "none",
-                  p: "16px",
-                }}
-                secondaryAction={
-                  <Box sx={{ display: "flex", gap: 1 }}>
-                    <Button
-                      size="small"
-                      onClick={() =>
-                        navigate("/", {
-                          state: { openNewEntry: true, recipeId: r.id },
-                        })
-                      }
-                    >
-                      Use Recipe
-                    </Button>
-                    <Tooltip title="Edit recipe">
-                      <IconButton
-                        edge="end"
-                        sx={{
-                          color: "primary.main",
-                          opacity: 0.85,
-                          "&:hover": { opacity: 1 },
-                        }}
-                        onClick={() => openEdit(r)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete recipe">
-                      <IconButton
-                        edge="end"
-                        onClick={() => remove(r.id)}
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                }
-              >
-                <ListItemText
-                  primary={
-                    <Typography variant="subtitle1" fontWeight={600}>
-                      {r.name || "Untitled recipe"}
-                    </Typography>
-                  }
-                  secondary={
-                    <>
-                      {r.description && (
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mb: 0.75 }}
-                        >
-                          {r.description}
-                        </Typography>
-                      )}
-
-                      <Stack
-                        direction="row"
-                        spacing={0.75}
-                        useFlexGap
-                        flexWrap="wrap"
-                      >
-                        {r.items.length === 0 ? (
-                          <Typography variant="body2" color="text.secondary">
-                            No ingredients
-                          </Typography>
-                        ) : (
-                          r.items.map((it, i) => <FoodChip key={i} item={it} />)
-                        )}
-                      </Stack>
-                    </>
-                  }
-                />
-              </ListItem>
-            </Card>
-          ))}
-        </List>
+      {loading && (
+        <Typography color="text.secondary">Loading recipes…</Typography>
+      )}
+      {err && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {err}
+        </Alert>
       )}
 
+      {!loading &&
+        !err &&
+        (recipes.length === 0 ? (
+          <Box
+            sx={{
+              border: "1px dashed",
+              borderColor: "divider",
+              borderRadius: 2,
+              p: 4,
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              No recipes yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Create a recipe with <strong>New Recipe</strong> or create an
+              entry and click <strong>Save as Recipe</strong>.
+            </Typography>
+          </Box>
+        ) : (
+          <List sx={{ width: "100%" }}>
+            {recipes.map((r, idx) => (
+              <Card key={r._id} sx={{ mb: 2 }}>
+                <ListItem
+                  sx={{
+                    bgcolor: idx % 2 === 0 ? "background.default" : "grey.50",
+                    "&:hover": { bgcolor: "action.hover" },
+                    transition: "background-color 0.2s ease",
+                    borderRadius: 2,
+                    boxShadow: 1,
+                    p: "16px",
+                  }}
+                  secondaryAction={
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <Tooltip title="View recipe">
+                        <IconButton
+                          edge="end"
+                          onClick={() => openDetails(r._id)}
+                          sx={{ color: "primary.main", opacity: 0.9 }}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Button
+                        size="small"
+                        onClick={() =>
+                          navigate("/", {
+                            state: { openNewEntry: true, recipeId: r._id },
+                          })
+                        }
+                      >
+                        Use Recipe
+                      </Button>
+                      <Tooltip title="Edit recipe">
+                        <IconButton edge="end" onClick={() => openEdit(r)}>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete recipe">
+                        <IconButton
+                          edge="end"
+                          onClick={() => remove(r._id)}
+                          color="error"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  }
+                >
+                  <ListItemText
+                    primary={
+                      <Typography variant="subtitle1" fontWeight={600}>
+                        {r.name || "Untitled recipe"}
+                      </Typography>
+                    }
+                    secondary={
+                      <>
+                        {r.description && (
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mb: 0.75 }}
+                          >
+                            {r.description}
+                          </Typography>
+                        )}
+                        <Stack
+                          direction="row"
+                          spacing={0.75}
+                          useFlexGap
+                          flexWrap="wrap"
+                        >
+                          {r.items.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary">
+                              No ingredients
+                            </Typography>
+                          ) : (
+                            r.items.map((it, i) => (
+                              <FoodChip key={i} item={it as any} />
+                            ))
+                          )}
+                        </Stack>
+                      </>
+                    }
+                  />
+                </ListItem>
+              </Card>
+            ))}
+          </List>
+        ))}
+
+      {/* Editor (create/edit) */}
       <RecipeEditorDialog
         open={editorOpen}
-        initial={editing ?? undefined}
+        initial={
+          editing
+            ? {
+                id: editing._id,
+                name: editing.name,
+                description: editing.description,
+                items: editing.items as any,
+              }
+            : undefined
+        }
         onClose={closeEditor}
-        onSave={handleSaveRecipe}
+        onSave={(p) => handleSaveRecipe({ id: editing?._id, ...p })}
+      />
+
+      {/* Details (lazy fetch by id) */}
+      <RecipeDetailsDialog
+        open={detailsOpen}
+        recipeId={selectedId}
+        onClose={closeDetails}
+        onUseRecipe={handleUseRecipe}
       />
 
       <Snackbar

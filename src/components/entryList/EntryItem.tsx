@@ -10,8 +10,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { format } from "date-fns";
-
-import { RatingComp } from "../../components/rating/Rating";
 import type { FoodEntry } from "../../types";
 import { FoodChip } from "../ui/FoodChip";
 import { ReadOnlyRating } from "../ui/ReadOnlyRating";

@@ -36,6 +36,9 @@ import {
 } from "./utils/storage";
 import { RecipeNameDialog } from "./components/RecipeNameDialog";
 import type { NewEntryFromRecipePayload } from "./components/NewEntryFromRecipeDialog";
+import { entriesApi } from "./api/entries";
+import { recipesApi } from "./api/recipes";
+import { fromServerEntry, toServerEntryFromForm } from "./api/types";
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -62,6 +65,21 @@ export default function App() {
   useEffect(() => {
     saveRecipes(recipes);
   }, [recipes]);
+
+  // ===== FETCH entries on mount (and when sort changes, if you want server sort) =====
+  useEffect(() => {
+    let isMounted = true;
+    entriesApi
+      .list({ sort: sortBy })
+      .then((res) => {
+        if (!isMounted) return;
+        setEntries(res.items.map(fromServerEntry));
+      })
+      .catch(console.error);
+    return () => {
+      isMounted = false;
+    };
+  }, [sortBy]);
 
   // Open modal from navigation state and optionally prefill with recipe
   useEffect(() => {
@@ -108,7 +126,7 @@ export default function App() {
     setOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.date) return;
     const cleanedItems = form.items.map<FoodItem>((it) => ({
       name: it.name.trim(),
@@ -130,7 +148,9 @@ export default function App() {
         reaction: form.reaction || undefined,
         rating: form.rating || 0,
       };
-      setEntries((prev) => [newEntry, ...prev]);
+      const saved = await entriesApi.create(toServerEntryFromForm(newEntry));
+      const fe = fromServerEntry(saved);
+      setEntries((prev) => [fe, ...prev]);
     } else if (mode === "edit" && editingId) {
       setEntries((prev) =>
         prev.map((e) =>
@@ -151,6 +171,12 @@ export default function App() {
         )
       );
     }
+    const saved = await entriesApi.update(
+      editingId,
+      toServerEntryFromForm(form)
+    );
+    const fe = fromServerEntry(saved);
+    setEntries((prev) => prev.map((e) => (e.id === editingId ? fe : e)));
     setForm({ ...emptyForm });
     setEditingId(null);
     setOpen(false);
@@ -163,9 +189,14 @@ export default function App() {
     setPendingDeleteId(id);
     setConfirmOpen(true);
   };
-  const confirmDelete = () => {
-    if (pendingDeleteId)
+  const confirmDelete = async () => {
+    if (!pendingDeleteId) return;
+    try {
+      await entriesApi.remove(pendingDeleteId);
       setEntries((prev) => prev.filter((e) => e.id !== pendingDeleteId));
+    } catch (err) {
+      console.error(err);
+    }
     setPendingDeleteId(null);
     setConfirmOpen(false);
   };
@@ -181,7 +212,7 @@ export default function App() {
     setRecipeDialogOpen(true);
   };
 
-  const confirmSaveRecipe = (name: string) => {
+  const confirmSaveRecipe = async (name: string) => {
     const items = form.items
       .map((it) => ({ name: it.name.trim(), type: it.type }))
       .filter((it) => it.name); // only non-empty
@@ -198,6 +229,7 @@ export default function App() {
 
     const newRecipe: Recipe = { id: crypto.randomUUID(), name, items };
     setRecipes((prev) => [newRecipe, ...prev]);
+    //const saved = await entriesApi.create(toServerEntryFromForm(newEntry));
     setRecipeDialogOpen(false);
     setSnack({
       open: true,
