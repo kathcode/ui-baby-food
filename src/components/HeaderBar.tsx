@@ -14,7 +14,7 @@ export function HeaderBar() {
 
         <Button
           component={Link}
-          to="/"
+          to="/log"
           color={onRecipes ? "inherit" : "secondary"}
           variant={onRecipes ? "text" : "contained"}
         >

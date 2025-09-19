@@ -23,16 +23,16 @@ import RecipeDetailsDialog from "../components/RecipeDetailsDialog";
 import { FoodChip } from "../components/ui/FoodChip";
 
 // 🔗 API
-import { recipesApi, type SRecipe } from "../api/recipes";
+import { recipesApi } from "../api/recipes";
 
 export default function RecipesPage() {
-  const [recipes, setRecipes] = useState<SRecipe[]>([]);
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
   // editor state (if you still want create/edit here)
   const [editorOpen, setEditorOpen] = useState(false);
-  const [editing, setEditing] = useState<SRecipe | null>(null);
+  const [editing, setEditing] = useState(null);
 
   // details state
   const [detailsOpen, setDetailsOpen] = useState(false);

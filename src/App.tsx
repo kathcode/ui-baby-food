@@ -39,6 +39,8 @@ import type { NewEntryFromRecipePayload } from "./components/NewEntryFromRecipeD
 import { entriesApi } from "./api/entries";
 import { recipesApi } from "./api/recipes";
 import { fromServerEntry, toServerEntryFromForm } from "./api/types";
+import HomePage from "./pages/HomePage";
+import PaywallCard from "./components/PaywallCard";
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -264,6 +266,23 @@ export default function App() {
       <Routes>
         <Route
           path="/"
+          element={
+            <Container sx={{ py: 3 }}>
+              <HomePage />
+            </Container>
+          }
+        />
+
+        <Route
+          path="/paywall"
+          element={
+            <Container sx={{ py: 3 }}>
+              <PaywallCard />
+            </Container>
+          }
+        />
+        <Route
+          path="/log"
           element={
             <Container sx={{ py: 3 }}>
               <EntryList

@@ -17,14 +17,14 @@ export type SFoodItem = {
   amountUnit?: "ml" | "g" | "tbsp" | "unit";
 };
 
-export type SRecipe = {
+export interface SRecipe {
   _id: string;
   name: string;
   description?: string;
   items: SFoodItem[];
   createdAt?: string;
   updatedAt?: string;
-};
+}
 
 export const recipesApi = {
   list: (p: EntryListParams = {}) =>
