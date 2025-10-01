@@ -16,6 +16,7 @@ import { HeaderBar } from "./components/HeaderBar";
 import { EntryFormDialog } from "./components/EntryFormDialog/EntryFormDialog";
 import { EntryList } from "./components/EntryList/EntryList"; // your existing list component
 import RecipesPage from "./pages/RecipesPage";
+import { startOfWeek } from "date-fns";
 
 import {
   emptyForm,
@@ -41,6 +42,9 @@ import { recipesApi } from "./api/recipes";
 import { fromServerEntry, toServerEntryFromForm } from "./api/types";
 import HomePage from "./pages/HomePage";
 import PaywallCard from "./components/PaywallCard";
+import { annotateNewFoods } from "./utils/foods";
+import ReportPage from "./pages/ReportPage";
+import ChecklistPage from "./pages/ChecklistPage";
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -70,16 +74,22 @@ export default function App() {
 
   // ===== FETCH entries on mount (and when sort changes, if you want server sort) =====
   useEffect(() => {
-    let isMounted = true;
-    entriesApi
-      .list({ sort: sortBy })
-      .then((res) => {
-        if (!isMounted) return;
-        setEntries(res.items.map(fromServerEntry));
-      })
-      .catch(console.error);
+    let alive = true;
+    (async () => {
+      try {
+        const res = await entriesApi.list({ sort: "newest" });
+        const mapped = res.items.map(fromServerEntry);
+
+        const cutoff = startOfWeek(new Date(), { weekStartsOn: 1 }); // Monday
+        const withFlags = annotateNewFoods(mapped, cutoff);
+
+        if (alive) setEntries(withFlags);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
     return () => {
-      isMounted = false;
+      alive = false;
     };
   }, [sortBy]);
 
@@ -153,6 +163,7 @@ export default function App() {
       const saved = await entriesApi.create(toServerEntryFromForm(newEntry));
       const fe = fromServerEntry(saved);
       setEntries((prev) => [fe, ...prev]);
+      setOpen(false);
     } else if (mode === "edit" && editingId) {
       setEntries((prev) =>
         prev.map((e) =>
@@ -173,6 +184,7 @@ export default function App() {
         )
       );
     }
+
     const saved = await entriesApi.update(
       editingId,
       toServerEntryFromForm(form)
@@ -274,14 +286,6 @@ export default function App() {
         />
 
         <Route
-          path="/paywall"
-          element={
-            <Container sx={{ py: 3 }}>
-              <PaywallCard />
-            </Container>
-          }
-        />
-        <Route
           path="/log"
           element={
             <Container sx={{ py: 3 }}>
@@ -349,6 +353,7 @@ export default function App() {
             </Container>
           }
         />
+
         <Route
           path="/recipes"
           element={
@@ -356,6 +361,24 @@ export default function App() {
               <RecipesPage
                 onCreateEntryFromRecipe={handleCreateEntryFromRecipe}
               />
+            </Container>
+          }
+        />
+
+        <Route
+          path="/checklist"
+          element={
+            <Container sx={{ py: 3 }}>
+              <ChecklistPage />
+            </Container>
+          }
+        />
+
+        <Route
+          path="/report"
+          element={
+            <Container sx={{ py: 3 }}>
+              <ReportPage />
             </Container>
           }
         />

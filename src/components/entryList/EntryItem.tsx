@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Box,
+  Chip,
   IconButton,
   ListItem,
   ListItemText,
@@ -13,6 +14,7 @@ import { format } from "date-fns";
 import type { FoodEntry } from "../../types";
 import { FoodChip } from "../ui/FoodChip";
 import { ReadOnlyRating } from "../ui/ReadOnlyRating";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
 
 export function EntryItem({
   e,
@@ -87,6 +89,7 @@ export function EntryItem({
                 ))}
               </Stack>
             )}
+
             <Stack
               direction="row"
               spacing={2}

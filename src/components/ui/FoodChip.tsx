@@ -1,6 +1,7 @@
 import React from "react";
 import { Chip } from "@mui/material";
 import type { FoodItem, FoodType } from "../../types";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
 
 const TYPE_STYLES: Record<FoodType, { bg: string; fg: string }> = {
   Fruit: { bg: "#FFEFF3", fg: "#A63A50" }, // soft pink
@@ -16,17 +17,28 @@ export function FoodChip({ item }: { item: FoodItem }) {
       ? ` — ${item.amount}${item.amountUnit ? ` ${item.amountUnit}` : ""}`
       : "";
   return (
-    <Chip
-      size="small"
-      label={`${item.name} (${item.type})${qty}`}
-      sx={{
-        bgcolor: bg,
-        color: fg,
-        fontWeight: 600,
-        borderRadius: 2,
-        "& .MuiChip-label": { px: 1.25, py: 0.25 },
-      }}
-      variant="filled"
-    />
+    <>
+      <Chip
+        size="small"
+        label={`${item.name} (${item.type})${qty}`}
+        sx={{
+          bgcolor: bg,
+          color: fg,
+          fontWeight: 600,
+          borderRadius: 2,
+          "& .MuiChip-label": { px: 1.25, py: 0.25 },
+        }}
+        variant="filled"
+      />
+      {(item as any).__isNew && (
+        <Chip
+          size="small"
+          color="warning"
+          variant="outlined"
+          icon={<NewReleasesIcon sx={{ fontSize: 16 }} />}
+          label="NEW"
+        />
+      )}
+    </>
   );
 }

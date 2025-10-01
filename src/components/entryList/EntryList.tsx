@@ -51,6 +51,10 @@ export function EntryList({
   return (
     <>
       {/* Today */}
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Today
+      </Typography>
+
       {todaysEntries.length === 0 ? (
         <EmptyList title={"Today"}>
           <Typography variant="body2" color="text.secondary">
@@ -73,6 +77,9 @@ export function EntryList({
       )}
 
       {/* Previous days */}
+      <Typography variant="h5" sx={{ mb: 2 }}>
+        Previous days
+      </Typography>
       {otherEntries.length === 0 ? (
         <EmptyList title={"Previous days"}>
           <Typography variant="body2" color="text.secondary">
