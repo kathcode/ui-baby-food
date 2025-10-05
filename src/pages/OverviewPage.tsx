@@ -1,5 +1,5 @@
 // src/pages/OverviewPage.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Card,
@@ -8,7 +8,6 @@ import {
   CircularProgress,
   Divider,
   Grid,
-  Stack,
   Typography,
   Alert,
 } from "@mui/material";
@@ -28,6 +27,7 @@ import TodayIcon from "@mui/icons-material/Today";
 
 import { entriesApi } from "../api/entries";
 import { recipesApi } from "../api/recipes";
+import type { SRecipe } from "../api/recipes";
 import { fromServerEntry } from "../api/types";
 import type { FoodEntry } from "../types";
 
@@ -38,6 +38,11 @@ import { annotateNewFoods, normalizeFoodName } from "../utils/foods";
 
 const FOOD_TYPES = ["Fruit", "Carbohydrates", "Protein", "Vegetables"] as const;
 
+// Narrowing helper for optional flag added by annotateNewFoods
+function hasNewFlag(it: unknown): it is { __isNew?: boolean } {
+  return typeof it === "object" && it !== null && "__isNew" in it;
+}
+
 export default function OverviewPage() {
   const navigate = useNavigate();
 
@@ -46,7 +51,7 @@ export default function OverviewPage() {
 
   const [entriesToday, setEntriesToday] = useState<FoodEntry[]>([]);
   const [entries7d, setEntries7d] = useState<FoodEntry[]>([]);
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState<SRecipe[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -84,9 +89,9 @@ export default function OverviewPage() {
         );
 
         setRecipes(recipesRes.items);
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!alive) return;
-        setErr(e.message || "Failed to load overview");
+        setErr(e instanceof Error ? e.message : "Failed to load overview");
       } finally {
         if (alive) setLoading(false);
       }
@@ -102,7 +107,7 @@ export default function OverviewPage() {
     const s = new Set<string>();
     entries7d.forEach((e) => {
       e.items.forEach((it) => {
-        if ((it as any).__isNew) s.add(normalizeFoodName(it.name));
+        if (hasNewFlag(it) && it.__isNew) s.add(normalizeFoodName(it.name));
       });
     });
     return s.size;
@@ -149,7 +154,7 @@ export default function OverviewPage() {
     const s = new Set<string>();
     entriesToday.forEach((e) => {
       e.items.forEach((it) => {
-        if ((it as any).__isNew) s.add(normalizeFoodName(it.name));
+        if (hasNewFlag(it) && it.__isNew) s.add(normalizeFoodName(it.name));
       });
     });
     return s.size;

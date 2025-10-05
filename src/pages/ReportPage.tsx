@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Card,
@@ -29,8 +29,6 @@ import {
   toCsv,
   type FoodReportRow,
 } from "../utils/foodReport";
-import { loadCatalog } from "../data/foodCatalog";
-import { triedKeySet } from "../utils/foods";
 
 type Order = "asc" | "desc";
 type SortKey =

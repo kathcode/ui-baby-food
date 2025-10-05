@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { entriesApi } from "../api/entries";
 import { loadCatalog, saveCustomItem } from "../data/foodCatalog";

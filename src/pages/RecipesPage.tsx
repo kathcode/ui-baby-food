@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -23,16 +23,16 @@ import RecipeDetailsDialog from "../components/RecipeDetailsDialog";
 import { FoodChip } from "../components/ui/FoodChip";
 
 // 🔗 API
-import { recipesApi } from "../api/recipes";
+import { recipesApi, type SRecipe, type SFoodItem } from "../api/recipes";
 
 export default function RecipesPage() {
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState<SRecipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
   // editor state (if you still want create/edit here)
   const [editorOpen, setEditorOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const [editing, setEditing] = useState<SRecipe | null>(null);
 
   // details state
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -58,8 +58,9 @@ export default function RecipesPage() {
       .then((res) => {
         if (alive) setRecipes(res.items);
       })
-      .catch((e) => {
-        if (alive) setErr(e.message || "Failed to load recipes");
+      .catch((e: unknown) => {
+        if (alive)
+          setErr(e instanceof Error ? e.message : "Failed to load recipes");
       })
       .finally(() => {
         if (alive) setLoading(false);
@@ -74,10 +75,10 @@ export default function RecipesPage() {
       await recipesApi.remove(id);
       setRecipes((rs) => rs.filter((r) => r._id !== id));
       setSnack({ open: true, msg: "Recipe deleted", severity: "success" });
-    } catch (e: any) {
+    } catch (e: unknown) {
       setSnack({
         open: true,
-        msg: e.message || "Delete failed",
+        msg: e instanceof Error ? e.message : "Delete failed",
         severity: "error",
       });
     }
@@ -97,7 +98,7 @@ export default function RecipesPage() {
     id?: string;
     name: string;
     description?: string;
-    items: any[];
+    items: SFoodItem[];
   }) => {
     try {
       if (payload.id) {
@@ -119,10 +120,10 @@ export default function RecipesPage() {
         setRecipes((rs) => [created, ...rs]);
         setSnack({ open: true, msg: "Recipe saved", severity: "success" });
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setSnack({
         open: true,
-        msg: e.message || "Save failed",
+        msg: e instanceof Error ? e.message : "Save failed",
         severity: "error",
       });
     } finally {

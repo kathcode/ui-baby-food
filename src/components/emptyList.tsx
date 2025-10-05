@@ -1,6 +1,5 @@
 import { Box, Typography } from "@mui/material";
 import type { ReactElement } from "react";
-import type React from "react";
 
 export const EmptyList = ({
   title,

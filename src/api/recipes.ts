@@ -1,5 +1,5 @@
 import { request } from "./client";
-import type { Paginated, SEntry, SEntryCreate, SEntryUpdate } from "./types";
+import type { Paginated } from "./types";
 
 export type EntryListParams = {
   limit?: number;
@@ -26,9 +26,12 @@ export interface SRecipe {
   updatedAt?: string;
 }
 
+export type SRecipeCreate = Omit<SRecipe, "_id" | "createdAt" | "updatedAt">;
+export type SRecipeUpdate = Partial<SRecipeCreate>;
+
 export const recipesApi = {
   list: (p: EntryListParams = {}) =>
-    request<Paginated<SEntry>>(
+    request<Paginated<SRecipe>>(
       `/recipes?` +
         new URLSearchParams({
           limit: String(p.limit ?? 50),
@@ -39,16 +42,16 @@ export const recipesApi = {
         }).toString()
     ),
 
-  get: (id: string) => request<SEntry>(`/recipes/${id}`),
+  get: (id: string) => request<SRecipe>(`/recipes/${id}`),
 
-  create: (payload: SEntryCreate) =>
-    request<SEntry>(`/recipes`, {
+  create: (payload: SRecipeCreate) =>
+    request<SRecipe>(`/recipes`, {
       method: "POST",
       body: JSON.stringify(payload),
     }),
 
-  update: (id: string, payload: SEntryUpdate) =>
-    request<SEntry>(`/recipes/${id}`, {
+  update: (id: string, payload: SRecipeUpdate) =>
+    request<SRecipe>(`/recipes/${id}`, {
       method: "PUT",
       body: JSON.stringify(payload),
     }),

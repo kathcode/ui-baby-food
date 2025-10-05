@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
 import { Card, List, Typography } from "@mui/material";
 
 import { isSameDay } from "date-fns";
 import { EntryItem } from "./EntryItem";
 import type { FoodEntry, SortKey } from "../../types";
 import { EmptyList } from "../emptyList";
+import { useMemo } from "react";
 
 export function EntryList({
   entries,

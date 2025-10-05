@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   Box,
   Button,
@@ -25,6 +25,9 @@ import {
   type FoodItem,
   type FormState,
   type Mode,
+  type MealType,
+  type FoodType,
+  type AmountUnit,
 } from "../../types";
 
 export function EntryFormDialog({
@@ -112,7 +115,10 @@ export function EntryFormDialog({
               label="Type of Meal"
               value={form.typeOfMeal}
               onChange={(e) =>
-                setForm((f) => ({ ...f, typeOfMeal: e.target.value as any }))
+                setForm((f) => ({
+                  ...f,
+                  typeOfMeal: e.target.value as MealType,
+                }))
               }
             >
               {MEAL_OPTIONS.map((opt) => (
@@ -166,7 +172,7 @@ export function EntryFormDialog({
                     label="Type"
                     value={it.type}
                     onChange={(e) =>
-                      updateItem(idx, { type: e.target.value as any })
+                      updateItem(idx, { type: e.target.value as FoodType })
                     }
                   >
                     {FOOD_OPTIONS.map((opt) => (
