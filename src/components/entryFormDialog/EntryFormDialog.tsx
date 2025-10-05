@@ -155,7 +155,7 @@ export function EntryFormDialog({
           {/* Rows: Name + Type + Amount + Unit + remove */}
           {form.items.map((it, idx) => (
             <Grid container spacing={2} key={idx} alignItems="center">
-              <Grid item xs={12} sm={4}>
+              <Grid size={6}>
                 <TextField
                   label="Name"
                   value={it.name}
@@ -164,7 +164,7 @@ export function EntryFormDialog({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={3}>
+              <Grid size={6}>
                 <FormControl fullWidth>
                   <InputLabel id={`food-type-${idx}`}>Type</InputLabel>
                   <Select
@@ -184,7 +184,7 @@ export function EntryFormDialog({
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={3}>
+              <Grid size={6}>
                 <TextField
                   label="Amount"
                   type="number"
@@ -206,7 +206,7 @@ export function EntryFormDialog({
                 />
               </Grid>
 
-              <Grid item xs={12} sm={1.5}>
+              <Grid size={6}>
                 <FormControl fullWidth disabled={typeof it.amount !== "number"}>
                   <InputLabel id={`unit-${idx}`}>Unit</InputLabel>
                   <Select
@@ -231,9 +231,7 @@ export function EntryFormDialog({
               </Grid>
 
               <Grid
-                item
-                xs={12}
-                sm={0.5}
+                size={12}
                 sx={{ display: "flex", justifyContent: "center" }}
               >
                 {form.items.length > 1 && (

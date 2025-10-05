@@ -150,16 +150,6 @@ export default function OverviewPage() {
     return counts;
   }, [entries7d]);
 
-  const newFoodsTodayCount = useMemo(() => {
-    const s = new Set<string>();
-    entriesToday.forEach((e) => {
-      e.items.forEach((it) => {
-        if (hasNewFlag(it) && it.__isNew) s.add(normalizeFoodName(it.name));
-      });
-    });
-    return s.size;
-  }, [entriesToday]);
-
   const pieData = FOOD_TYPES.map((t, i) => ({
     id: i,
     label: t,
@@ -194,7 +184,7 @@ export default function OverviewPage() {
               color="primary"
               loading={loading}
             />
-            <Grid item xs={12} md={4}>
+            <Grid size={3}>
               <KpiCard
                 title="Recipes saved"
                 value={recipesCount}
@@ -204,7 +194,7 @@ export default function OverviewPage() {
                 loading={loading}
               />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={3}>
               <KpiCard
                 title="Today’s foods"
                 value={
@@ -225,7 +215,7 @@ export default function OverviewPage() {
               />
             </Grid>
 
-            <Grid item xs={12} md={3}>
+            <Grid size={3}>
               <KpiCard
                 title="New foods this week"
                 value={newFoodsThisWeekCount || "—"}
@@ -239,7 +229,7 @@ export default function OverviewPage() {
 
           {/* Action Cards */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid item xs={12} md={6}>
+            <Grid size={4}>
               <Card sx={{ borderRadius: 1, boxShadow: 2 }}>
                 <CardActionArea onClick={() => navigate("/recipes")}>
                   <CardContent sx={{ p: 3 }}>
@@ -262,7 +252,7 @@ export default function OverviewPage() {
               </Card>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={4}>
               <Card sx={{ borderRadius: 1, boxShadow: 2 }}>
                 <CardActionArea onClick={() => navigate("/log")}>
                   <CardContent sx={{ p: 3 }}>
@@ -289,8 +279,8 @@ export default function OverviewPage() {
           {/* Charts */}
           <Grid container spacing={2}>
             {/* Meals per day (bar) */}
-            <Grid item xs={12} md={7}>
-              <Card sx={{ p: 2 }}>
+            <Grid size={6}>
+              <Card>
                 <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
                   Meals per day (last 7 days)
                 </Typography>
@@ -304,7 +294,7 @@ export default function OverviewPage() {
             </Grid>
 
             {/* Food type distribution (pie) */}
-            <Grid item xs={12} md={5}>
+            <Grid size={6}>
               <Card sx={{ p: 2 }}>
                 <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
                   Food types (last 7 days)

@@ -283,7 +283,7 @@ export default function RecipesPage() {
                             </Typography>
                           ) : (
                             r.items.map((it, i) => (
-                              <FoodChip key={i} item={it as any} />
+                              <FoodChip key={i} item={it as SFoodItem} />
                             ))
                           )}
                         </Stack>
@@ -305,7 +305,7 @@ export default function RecipesPage() {
                 id: editing._id,
                 name: editing.name,
                 description: editing.description,
-                items: editing.items as any,
+                items: editing.items as SFoodItem[],
               }
             : undefined
         }

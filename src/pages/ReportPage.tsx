@@ -71,8 +71,9 @@ export default function ReportPage() {
         const entries = res.items.map(fromServerEntry);
         const report = buildFoodReport(entries);
         if (alive) setRows(report);
-      } catch (e: any) {
-        if (alive) setErr(e.message || "Failed to load report");
+      } catch (e: unknown) {
+        if (alive)
+          setErr(e instanceof Error ? e.message : "Failed to load report");
       } finally {
         if (alive) setLoading(false);
       }
@@ -157,7 +158,9 @@ export default function ReportPage() {
                 labelId="type-filter"
                 label="Type"
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as any)}
+                onChange={(e) =>
+                  setTypeFilter(e.target.value as FoodType | "All")
+                }
               >
                 {FOOD_TYPES.map((t) => (
                   <MenuItem key={t} value={t}>

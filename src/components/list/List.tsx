@@ -10,13 +10,21 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { RatingComp } from "../rating/Rating";
+import type { FoodEntry } from "../../types";
+
+interface ListCompProps {
+  todaysEntries: FoodEntry[];
+  openEdit: (entry: FoodEntry) => void;
+  requestDelete: (id: string) => void;
+  format: (date: Date, format: string) => string;
+}
 
 export const ListComp = ({
   todaysEntries,
   openEdit,
   requestDelete,
   format,
-}) => (
+}: ListCompProps) => (
   <List>
     {todaysEntries.map((e, index) => (
       <Card key={e.id} sx={{ mb: 2 }}>
