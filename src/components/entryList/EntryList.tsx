@@ -4,7 +4,7 @@ import { isSameDay } from "date-fns";
 import type { FoodEntry, SortKey } from "../../types";
 import { EmptyList } from "../emptyList";
 import { useMemo } from "react";
-import { EntryItem } from "./EntryItem";
+import { EntryItem } from "../entryList/EntryItem";
 
 export function EntryList({
   entries,
