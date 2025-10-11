@@ -57,7 +57,7 @@ export default function PaywallCard() {
     <Box maxWidth="lg" mx="auto">
       <Grid container spacing={3}>
         {/* Monthly plan */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card variant="outlined">
             <CardHeader
               title={
@@ -109,7 +109,7 @@ export default function PaywallCard() {
         </Grid>
 
         {/* Lifetime plan */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card variant="outlined">
             <CardHeader
               title={<Typography variant="h6">Founding Lifetime</Typography>}

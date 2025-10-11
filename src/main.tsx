@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -7,6 +6,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { BrowserRouter } from "react-router-dom";
 
 import theme from "./theme";
+import React from "react";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

@@ -9,7 +9,6 @@ import {
   Divider,
   FormControl,
   Grid,
-  IconButton,
   InputLabel,
   List,
   ListItem,
@@ -27,7 +26,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import type { FoodType } from "../../types";
 import type { Catalog } from "../../data/foodCatalog";
-import { buildTriedKey, normalizeFoodName } from "../../utils/foods";
+import { buildTriedKey } from "../../utils/foods";
 
 type Props = {
   catalog: Catalog;
@@ -166,7 +165,7 @@ export function NeverTriedChecklist({
             <AccordionDetails>
               <Grid container spacing={2}>
                 {/* Never tried list */}
-                <Grid item xs={12} md={6}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Typography variant="overline">Never tried</Typography>
                   {pending.length === 0 ? (
                     <Typography variant="body2" color="text.secondary">
@@ -187,7 +186,7 @@ export function NeverTriedChecklist({
                 </Grid>
 
                 {/* Already tried list (for context) */}
-                <Grid item xs={12} md={6}>
+                <Grid component="div" size={{ xs: 12, md: 6 }}>
                   <Typography variant="overline">Already tried</Typography>
                   {tried === 0 ? (
                     <Typography variant="body2" color="text.secondary">

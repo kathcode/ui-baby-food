@@ -18,7 +18,8 @@ import {
   Alert,
 } from "@mui/material";
 import { FoodChip } from "./ui/FoodChip";
-import { recipesApi } from "../api/recipes";
+import { recipesApi, type SRecipe } from "../api/recipes";
+import type { FoodItem } from "../types";
 
 type Props = {
   open: boolean;
@@ -33,7 +34,7 @@ export default function RecipeDetailsDialog({
   onClose,
   onUseRecipe,
 }: Props) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<SRecipe | null>(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -94,7 +95,7 @@ export default function RecipeDetailsDialog({
                 sx={{ mb: 2 }}
               >
                 {data.items.map((it, idx) => (
-                  <FoodChip key={idx} item={it as any} />
+                  <FoodChip key={idx} item={it as FoodItem} />
                 ))}
               </Stack>
             )}

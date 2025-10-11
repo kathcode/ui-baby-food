@@ -136,7 +136,7 @@ export default function RecipeEditorDialog({
           {items.map((it, idx) => (
             <Grid container spacing={2} key={idx} alignItems="center">
               {/* Name */}
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <TextField
                   label="Name"
                   value={it.name}
@@ -145,7 +145,7 @@ export default function RecipeEditorDialog({
                 />
               </Grid>
               {/* Type */}
-              <Grid item xs={12} sm={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <FormControl fullWidth>
                   <InputLabel id={`type-${idx}`}>Type</InputLabel>
                   <Select
@@ -165,7 +165,7 @@ export default function RecipeEditorDialog({
                 </FormControl>
               </Grid>
               {/* Amount */}
-              <Grid item xs={12} sm={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <TextField
                   label="Amount"
                   type="number"
@@ -187,7 +187,7 @@ export default function RecipeEditorDialog({
                 />
               </Grid>
               {/* Unit */}
-              <Grid item xs={12} sm={1.5}>
+              <Grid size={{ xs: 12, md: 1.5 }}>
                 <FormControl fullWidth disabled={typeof it.amount !== "number"}>
                   <InputLabel id={`unit-${idx}`}>Unit</InputLabel>
                   <Select
@@ -212,9 +212,7 @@ export default function RecipeEditorDialog({
               </Grid>
               {/* Remove */}
               <Grid
-                item
-                xs={12}
-                sm={0.5}
+                size={{ xs: 12, md: 0.5 }}
                 sx={{ display: "flex", justifyContent: "center" }}
               >
                 {items.length > 1 && (

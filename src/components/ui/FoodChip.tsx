@@ -1,4 +1,3 @@
-import React from "react";
 import { Chip } from "@mui/material";
 import type { FoodItem, FoodType } from "../../types";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";

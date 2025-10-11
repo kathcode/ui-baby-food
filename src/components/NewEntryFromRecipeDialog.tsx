@@ -132,7 +132,7 @@ export function NewEntryFromRecipeDialog({
           </FormControl>
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={7}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <TextField
                 label="Total Amount (optional)"
                 type="number"
@@ -145,7 +145,7 @@ export function NewEntryFromRecipeDialog({
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} sm={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <FormControl fullWidth disabled={amount === ""}>
                 <InputLabel id="unit-label">Unit</InputLabel>
                 <Select

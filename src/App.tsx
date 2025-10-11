@@ -20,14 +20,13 @@ import { startOfWeek } from "date-fns";
 
 import {
   emptyForm,
-  RECIPE_STORAGE_KEY,
   type AmountUnit,
   type FoodEntry,
   type FoodItem,
   type FormState,
+  type MealType,
   type Mode,
   type Recipe,
-  type SortKey,
 } from "./types";
 import {
   loadEntries,
@@ -38,10 +37,8 @@ import {
 import { RecipeNameDialog } from "./components/RecipeNameDialog";
 import type { NewEntryFromRecipePayload } from "./components/NewEntryFromRecipeDialog";
 import { entriesApi } from "./api/entries";
-import { recipesApi } from "./api/recipes";
-import { fromServerEntry, toServerEntryFromForm } from "./api/types";
+import { fromServerEntry, toServerEntry } from "./api/types";
 import HomePage from "./pages/HomePage";
-import PaywallCard from "./components/PaywallCard";
 import { annotateNewFoods } from "./utils/foods";
 import ReportPage from "./pages/ReportPage";
 import ChecklistPage from "./pages/ChecklistPage";
@@ -52,7 +49,6 @@ export default function App() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>({ ...emptyForm });
   const [entries, setEntries] = useState<FoodEntry[]>(() => loadEntries());
-  const [sortBy, setSortBy] = useState<SortKey>("newest");
   const [recipes, setRecipes] = useState<Recipe[]>(() => loadRecipes());
   const [recipeDialogOpen, setRecipeDialogOpen] = useState(false);
   const [recipeDefaultName, setRecipeDefaultName] = useState("");
@@ -91,11 +87,14 @@ export default function App() {
     return () => {
       alive = false;
     };
-  }, [sortBy]);
+  }, []);
 
   // Open modal from navigation state and optionally prefill with recipe
   useEffect(() => {
-    const state = location.state as any;
+    const state = location.state as {
+      openNewEntry?: boolean;
+      recipeId?: string;
+    };
     if (state?.openNewEntry) {
       if (state.recipeId) {
         const recipes = loadRecipes(); // from utils/storage
@@ -152,7 +151,7 @@ export default function App() {
         id: crypto.randomUUID(),
         date: form.date,
         items: cleanedItems,
-        typeOfMeal: form.typeOfMeal as any,
+        typeOfMeal: form.typeOfMeal as MealType,
         amount: form.amount === "" ? undefined : Number(form.amount),
         amountUnit: (form.amount === ""
           ? undefined
@@ -160,7 +159,7 @@ export default function App() {
         reaction: form.reaction || undefined,
         rating: form.rating || 0,
       };
-      const saved = await entriesApi.create(toServerEntryFromForm(newEntry));
+      const saved = await entriesApi.create(toServerEntry(newEntry));
       const fe = fromServerEntry(saved);
       setEntries((prev) => [fe, ...prev]);
       setOpen(false);
@@ -172,7 +171,7 @@ export default function App() {
                 ...e,
                 date: form.date!,
                 items: cleanedItems,
-                typeOfMeal: form.typeOfMeal as any,
+                typeOfMeal: form.typeOfMeal as MealType,
                 amount: form.amount === "" ? undefined : Number(form.amount),
                 amountUnit: (form.amount === ""
                   ? undefined
@@ -184,10 +183,10 @@ export default function App() {
         )
       );
     }
-
+    if (!editingId) return;
     const saved = await entriesApi.update(
       editingId,
-      toServerEntryFromForm(form)
+      toServerEntry(form as FoodEntry)
     );
     const fe = fromServerEntry(saved);
     setEntries((prev) => prev.map((e) => (e.id === editingId ? fe : e)));
@@ -291,7 +290,7 @@ export default function App() {
             <Container sx={{ py: 3 }}>
               <EntryList
                 entries={entries}
-                sortBy={sortBy}
+                sortBy={"newest"}
                 onEdit={openEdit}
                 onDelete={requestDelete}
               />

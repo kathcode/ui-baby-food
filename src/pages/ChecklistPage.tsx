@@ -4,10 +4,12 @@ import { entriesApi } from "../api/entries";
 import { loadCatalog, saveCustomItem } from "../data/foodCatalog";
 import { triedKeySet } from "../utils/foods";
 import { NeverTriedChecklist } from "../components/report/NeverTriedChecklist";
+import { fromServerEntry } from "../api/types";
+import type { FoodEntry } from "../types";
 
 export default function ChecklistPage() {
   const [catalog, setCatalog] = useState(loadCatalog());
-  const [entries, setEntries] = useState([]);
+  const [entries, setEntries] = useState<FoodEntry[]>([]);
   const triedKeys = useMemo(() => triedKeySet(entries), [entries]);
 
   useEffect(() => {
@@ -20,8 +22,11 @@ export default function ChecklistPage() {
           offset: 0,
           sort: "newest",
         });
-        setEntries(res.items);
-      } catch (e: any) {
+        if (alive) {
+          const mappedEntries = res.items.map(fromServerEntry);
+          setEntries(mappedEntries);
+        }
+      } catch (e: unknown) {
         console.log(e);
       }
     })();

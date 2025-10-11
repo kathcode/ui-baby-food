@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Rating } from "@mui/material";
 
 export function ReadOnlyRating({

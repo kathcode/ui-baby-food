@@ -3,13 +3,10 @@ import {
   Grid,
   Box,
   Typography,
-  Button,
-  Paper,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Link,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import PaywallCard from "../PaywallCard";
@@ -25,7 +22,7 @@ export default function ProTeaser() {
     <Box component="section" py={{ xs: 6, md: 10 }}>
       <Container maxWidth="lg">
         <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} md={4}>
+          <Grid component="div">
             <Typography variant="h4" fontWeight={700}>
               Go Pro
             </Typography>
@@ -46,7 +43,7 @@ export default function ProTeaser() {
             </List>
           </Grid>
 
-          <Grid item xs={12} md={8}>
+          <Grid component="div">
             <PaywallCard />
           </Grid>
         </Grid>
