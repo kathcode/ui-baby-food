@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Dialog,
@@ -13,8 +13,8 @@ import AddIcon from "@mui/icons-material/Add";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
 import { HeaderBar } from "./components/HeaderBar";
-import { EntryFormDialog } from "./components/EntryFormDialog/EntryFormDialog";
-import { EntryList } from "./components/EntryList/EntryList"; // your existing list component
+import { EntryFormDialog } from "./components/entryFormDialog/EntryFormDialog";
+import { EntryList } from "./components/entryList/EntryList"; // your existing list component
 import RecipesPage from "./pages/RecipesPage";
 import { startOfWeek } from "date-fns";
 
