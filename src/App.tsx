@@ -35,7 +35,6 @@ import {
   saveRecipes,
 } from "./utils/storage";
 import { RecipeNameDialog } from "./components/RecipeNameDialog";
-import type { NewEntryFromRecipePayload } from "./components/NewEntryFromRecipeDialog";
 import { entriesApi } from "./api/entries";
 import { fromServerEntry, toServerEntry } from "./api/types";
 import HomePage from "./pages/HomePage";
@@ -251,25 +250,6 @@ export default function App() {
     });
   };
 
-  const handleCreateEntryFromRecipe = (
-    p: NewEntryFromRecipePayload & { items: FoodEntry["items"] }
-  ) => {
-    const newEntry: FoodEntry = {
-      id: crypto.randomUUID(),
-      date: p.date,
-      items: p.items, // items come from the recipe
-      typeOfMeal: p.typeOfMeal,
-      amount: typeof p.amount === "number" ? p.amount : undefined,
-      amountUnit:
-        p.amount === undefined
-          ? undefined
-          : (p.amountUnit as AmountUnit | undefined),
-      reaction: p.reaction || undefined,
-      rating: p.rating,
-    };
-    setEntries((prev) => [newEntry, ...prev]);
-  };
-
   return (
     <>
       <HeaderBar />
@@ -357,9 +337,7 @@ export default function App() {
           path="/recipes"
           element={
             <Container sx={{ py: 3 }}>
-              <RecipesPage
-                onCreateEntryFromRecipe={handleCreateEntryFromRecipe}
-              />
+              <RecipesPage />
             </Container>
           }
         />
