@@ -22,7 +22,8 @@ export interface Recipe {
   items: FoodItem[];
 }
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "https://api-baby-food.onrender.com/api";
 
 // Helper to handle responses
 async function request<T>(url: string, options?: RequestInit): Promise<T> {

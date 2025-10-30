@@ -1,5 +1,6 @@
 # SnugBites baby UI Application
 
-## Thechnology
+## Technology
 
 - Pnpm
+- Vite
