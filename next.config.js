@@ -7,4 +7,5 @@ module.exports = {
     // Optional: don’t fail build on ESLint issues in CI
     ignoreDuringBuilds: true,
   },
+  
 };
