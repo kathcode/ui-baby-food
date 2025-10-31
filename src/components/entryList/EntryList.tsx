@@ -82,14 +82,12 @@ export function EntryList({
       ) : (
         <List>
           {todaysEntries.map((e, index) => (
-            <Card key={e.id} sx={{ mb: 2 }}>
-              <EntryItem
-                e={e}
-                index={index}
-                onEdit={() => onEdit(e)}
-                onDelete={() => onDelete(e.id)}
-              />
-            </Card>
+            <EntryItem
+              e={e}
+              index={index}
+              onEdit={() => onEdit(e)}
+              onDelete={() => onDelete(e.id)}
+            />
           ))}
         </List>
       )}
@@ -107,14 +105,12 @@ export function EntryList({
       ) : (
         <List>
           {otherEntries.map((e, index) => (
-            <Card key={e.id} sx={{ mb: 2 }}>
-              <EntryItem
-                e={e}
-                index={index}
-                onEdit={() => onEdit(e)}
-                onDelete={() => onDelete(e.id)}
-              />
-            </Card>
+            <EntryItem
+              e={e}
+              index={index}
+              onEdit={() => onEdit(e)}
+              onDelete={() => onDelete(e.id)}
+            />
           ))}
         </List>
       )}

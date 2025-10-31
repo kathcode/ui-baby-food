@@ -233,7 +233,7 @@ export default function OverviewPage() {
                 <CardActionArea onClick={() => navigate("/recipes")}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" fontWeight={700}>
-                      Add Recipe
+                      + Add Recipe
                     </Typography>
                     <Typography
                       variant="body2"
@@ -256,7 +256,7 @@ export default function OverviewPage() {
                 <CardActionArea onClick={() => navigate("/log")}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" fontWeight={700}>
-                      Add Food Log
+                      + Add Food Log
                     </Typography>
                     <Typography
                       variant="body2"

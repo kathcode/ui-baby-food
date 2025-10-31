@@ -200,92 +200,99 @@ export default function RecipesPage() {
         ) : (
           <List sx={{ width: "100%" }}>
             {recipes.map((r, idx) => (
-              <Card key={r._id} sx={{ mb: 2 }}>
-                <ListItem
-                  sx={{
-                    bgcolor: idx % 2 === 0 ? "background.default" : "grey.50",
-                    "&:hover": { bgcolor: "action.hover" },
-                    transition: "background-color 0.2s ease",
-                    borderRadius: 2,
-                    boxShadow: 1,
-                    p: "16px",
-                  }}
-                  secondaryAction={
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Tooltip title="View recipe">
-                        <IconButton
-                          edge="end"
-                          onClick={() => openDetails(r._id)}
-                          sx={{ color: "primary.main", opacity: 0.9 }}
-                        >
-                          <VisibilityIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Button
-                        size="small"
-                        onClick={() =>
-                          navigate("/", {
-                            state: { openNewEntry: true, recipeId: r._id },
-                          })
-                        }
+              <ListItem
+                sx={{
+                  bgcolor: idx % 2 === 0 ? "background.default" : "grey.50",
+                  "&:hover": { bgcolor: "action.hover" },
+                  transition: "background-color 0.2s ease",
+                  borderRadius: 1,
+                  boxShadow: 1,
+                  p: "16px",
+                  mb: "16px",
+                }}
+                secondaryAction={
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    <Tooltip title="View recipe">
+                      <IconButton
+                        edge="end"
+                        onClick={() => openDetails(r._id)}
+                        sx={{ color: "primary.main", opacity: 0.9 }}
                       >
-                        Use Recipe
-                      </Button>
-                      <Tooltip title="Edit recipe">
-                        <IconButton edge="end" onClick={() => openEdit(r)}>
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete recipe">
-                        <IconButton
-                          edge="end"
-                          onClick={() => remove(r._id)}
-                          color="error"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
+                        <VisibilityIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Button
+                      size="small"
+                      onClick={() =>
+                        navigate("/", {
+                          state: { openNewEntry: true, recipeId: r._id },
+                        })
+                      }
+                    >
+                      Use Recipe
+                    </Button>
+                    <Tooltip title="Edit recipe">
+                      <IconButton edge="end" onClick={() => openEdit(r)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete recipe">
+                      <IconButton
+                        edge="end"
+                        onClick={() => remove(r._id)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                }
+              >
+                <ListItemText
+                  primary={
+                    <Typography variant="subtitle1" fontWeight={600}>
+                      {r.name || "Untitled recipe"}
+                    </Typography>
                   }
-                >
-                  <ListItemText
-                    primary={
-                      <Typography variant="subtitle1" fontWeight={600}>
-                        {r.name || "Untitled recipe"}
-                      </Typography>
-                    }
-                    secondary={
-                      <>
-                        {r.description && (
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mb: 0.75 }}
-                          >
-                            {r.description}
-                          </Typography>
-                        )}
-                        <Stack
-                          direction="row"
-                          spacing={0.75}
-                          useFlexGap
-                          flexWrap="wrap"
+                  secondary={
+                    <>
+                      {r.description && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            mb: 0.75,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            overflowWrap: "anywhere",
+                            width: "84%",
+                          }}
                         >
-                          {r.items.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary">
-                              No ingredients
-                            </Typography>
-                          ) : (
-                            r.items.map((it, i) => (
-                              <FoodChip key={i} item={it as SFoodItem} />
-                            ))
-                          )}
-                        </Stack>
-                      </>
-                    }
-                  />
-                </ListItem>
-              </Card>
+                          {r.description}
+                        </Typography>
+                      )}
+                      <Stack
+                        direction="row"
+                        spacing={0.75}
+                        useFlexGap
+                        flexWrap="wrap"
+                      >
+                        {r.items.length === 0 ? (
+                          <Typography variant="body2" color="text.secondary">
+                            No ingredients
+                          </Typography>
+                        ) : (
+                          r.items.map((it, i) => (
+                            <FoodChip key={i} item={it as SFoodItem} />
+                          ))
+                        )}
+                      </Stack>
+                    </>
+                  }
+                />
+              </ListItem>
             ))}
           </List>
         ))}
