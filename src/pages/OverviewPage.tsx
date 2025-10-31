@@ -44,10 +44,8 @@ function hasNewFlag(it: unknown): it is { __isNew?: boolean } {
 
 export default function OverviewPage() {
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-
   const [entriesToday, setEntriesToday] = useState<FoodEntry[]>([]);
   const [entries7d, setEntries7d] = useState<FoodEntry[]>([]);
   const [recipes, setRecipes] = useState<SRecipe[]>([]);
@@ -160,7 +158,7 @@ export default function OverviewPage() {
   return (
     <Box sx={{ py: 3 }}>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        Overview--
+        Overview
       </Typography>
 
       {loading ? (
@@ -174,16 +172,18 @@ export default function OverviewPage() {
       ) : (
         <>
           {/* Dashboard KPIs */}
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <KpiCard
-              title="Meals today"
-              value={mealsTodayCount}
-              subtitle="Logged entries for the current day"
-              icon={<RestaurantIcon />}
-              color="primary"
-              loading={loading}
-            />
-            <Grid size={3}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
+              <KpiCard
+                title="Meals today"
+                value={mealsTodayCount}
+                subtitle="Logged entries for the current day"
+                icon={<RestaurantIcon />}
+                color="primary"
+                loading={loading}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
               <KpiCard
                 title="Recipes saved"
                 value={recipesCount}
@@ -193,7 +193,7 @@ export default function OverviewPage() {
                 loading={loading}
               />
             </Grid>
-            <Grid size={3}>
+            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
               <KpiCard
                 title="Today’s foods"
                 value={
@@ -214,7 +214,7 @@ export default function OverviewPage() {
               />
             </Grid>
 
-            <Grid size={3}>
+            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
               <KpiCard
                 title="New foods this week"
                 value={newFoodsThisWeekCount || "—"}
@@ -227,9 +227,9 @@ export default function OverviewPage() {
           </Grid>
 
           {/* Action Cards */}
-          <Grid container spacing={2} sx={{ mb: 3 }}>
-            <Grid size={4}>
-              <Card sx={{ borderRadius: 1, boxShadow: 2 }}>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Card sx={{ borderRadius: 1, boxShadow: 2, mt: 2 }}>
                 <CardActionArea onClick={() => navigate("/recipes")}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" fontWeight={700}>
@@ -251,7 +251,7 @@ export default function OverviewPage() {
               </Card>
             </Grid>
 
-            <Grid size={4}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <Card sx={{ borderRadius: 1, boxShadow: 2 }}>
                 <CardActionArea onClick={() => navigate("/log")}>
                   <CardContent sx={{ p: 3 }}>
@@ -278,9 +278,9 @@ export default function OverviewPage() {
           {/* Charts */}
           <Grid container spacing={2}>
             {/* Meals per day (bar) */}
-            <Grid size={6}>
-              <Card>
-                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 6 }} sx={{ mt: 2 }}>
+              <Card sx={{ p: 2 }}>
+                <Typography variant="subtitle1" fontWeight={600}>
                   Meals per day (last 7 days)
                 </Typography>
                 <BarChart
@@ -293,9 +293,9 @@ export default function OverviewPage() {
             </Grid>
 
             {/* Food type distribution (pie) */}
-            <Grid size={6}>
+            <Grid size={{ xs: 12, md: 6, lg: 6 }}>
               <Card sx={{ p: 2 }}>
-                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>
+                <Typography variant="subtitle1" fontWeight={600}>
                   Food types (last 7 days)
                 </Typography>
                 {hasPieValues ? (
