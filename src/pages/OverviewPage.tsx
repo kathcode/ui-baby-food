@@ -173,7 +173,7 @@ export default function OverviewPage() {
         <>
           {/* Dashboard KPIs */}
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
               <KpiCard
                 title="Meals today"
                 value={mealsTodayCount}
@@ -183,7 +183,7 @@ export default function OverviewPage() {
                 loading={loading}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
               <KpiCard
                 title="Recipes saved"
                 value={recipesCount}
@@ -193,7 +193,7 @@ export default function OverviewPage() {
                 loading={loading}
               />
             </Grid>
-            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
               <KpiCard
                 title="Today’s foods"
                 value={
@@ -214,7 +214,7 @@ export default function OverviewPage() {
               />
             </Grid>
 
-            <Grid size={{ xs: 12, md: 6, lg: 2 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 3 }}>
               <KpiCard
                 title="New foods this week"
                 value={newFoodsThisWeekCount || "—"}
@@ -240,7 +240,7 @@ export default function OverviewPage() {
                       color="text.secondary"
                       sx={{ mt: 0.5 }}
                     >
-                      Create and manage your saved baby-friendly recipes.
+                      Create your saved baby-friendly recipes.
                     </Typography>
                     <Divider sx={{ my: 1.5 }} />
                     <Typography variant="caption" color="text.secondary">
@@ -252,7 +252,7 @@ export default function OverviewPage() {
             </Grid>
 
             <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <Card sx={{ borderRadius: 1, boxShadow: 2 }}>
+              <Card sx={{ borderRadius: 1, boxShadow: 2, mt: 2 }}>
                 <CardActionArea onClick={() => navigate("/log")}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" fontWeight={700}>
@@ -293,7 +293,7 @@ export default function OverviewPage() {
             </Grid>
 
             {/* Food type distribution (pie) */}
-            <Grid size={{ xs: 12, md: 6, lg: 6 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 6 }} sx={{ mt: 2 }}>
               <Card sx={{ p: 2 }}>
                 <Typography variant="subtitle1" fontWeight={600}>
                   Food types (last 7 days)
