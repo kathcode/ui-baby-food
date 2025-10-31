@@ -156,7 +156,7 @@ export default function OverviewPage() {
   const hasPieValues = pieData.some((p) => p.value > 0);
 
   return (
-    <Box sx={{ py: 3 }}>
+    <Box>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Overview
       </Typography>

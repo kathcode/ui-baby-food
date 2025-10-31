@@ -1,5 +1,5 @@
-import { Card, List, Typography } from "@mui/material";
-
+import { Box, Button, Card, Fab, List, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { isSameDay } from "date-fns";
 import type { FoodEntry, SortKey } from "../../types";
 import { EmptyList } from "../emptyList";
@@ -11,11 +11,13 @@ export function EntryList({
   sortBy,
   onEdit,
   onDelete,
+  onCreate,
 }: {
   entries: FoodEntry[];
   sortBy: SortKey;
   onEdit: (e: FoodEntry) => void;
   onDelete: (id: string) => void;
+  onCreate: () => void;
 }) {
   const sorted = useMemo(() => {
     const arr = [...entries];
@@ -49,11 +51,27 @@ export function EntryList({
   const otherEntries = sorted.filter((e) => !isSameDay(e.date, today));
 
   return (
-    <>
+    <Box sx={{ py: 3 }}>
       {/* Today */}
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Today
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
+        <Typography variant="h5">Today's Foods</Typography>
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={onCreate}
+          >
+            New Log
+          </Button>
+        </Box>
+      </Box>
 
       {todaysEntries.length === 0 ? (
         <EmptyList title={"Today"}>
@@ -100,6 +118,6 @@ export function EntryList({
           ))}
         </List>
       )}
-    </>
+    </Box>
   );
 }

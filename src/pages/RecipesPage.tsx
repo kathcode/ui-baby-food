@@ -159,12 +159,6 @@ export default function RecipesPage() {
         <Typography variant="h5">Saved Recipes</Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
-            variant="outlined"
-            onClick={() => navigate("/", { state: { openNewEntry: true } })}
-          >
-            New Entry
-          </Button>
-          <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={openCreate}

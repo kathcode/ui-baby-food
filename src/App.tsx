@@ -273,16 +273,8 @@ export default function App() {
                 sortBy={"newest"}
                 onEdit={openEdit}
                 onDelete={requestDelete}
+                onCreate={openCreate}
               />
-
-              <Fab
-                color="primary"
-                aria-label="add"
-                onClick={openCreate}
-                sx={{ position: "fixed", right: 24, bottom: 24 }}
-              >
-                <AddIcon />
-              </Fab>
 
               <EntryFormDialog
                 open={open}
