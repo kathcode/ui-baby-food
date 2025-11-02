@@ -5,13 +5,10 @@ import {
   DialogActions,
   DialogTitle,
   Button,
-  Fab,
   Snackbar,
   Alert,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-
 import { HeaderBar } from "./components/HeaderBar";
 import { EntryFormDialog } from "./components/entryFormDialog/EntryFormDialog";
 import { EntryList } from "./components/entryList/EntryList"; // your existing list component

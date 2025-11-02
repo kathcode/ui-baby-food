@@ -1,4 +1,4 @@
-import { Box, Button, Card, Fab, List, Typography } from "@mui/material";
+import { Box, Button, List, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { isSameDay } from "date-fns";
 import type { FoodEntry, SortKey } from "../../types";
