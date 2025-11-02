@@ -37,7 +37,7 @@ export default function ChecklistPage() {
 
   return (
     <Box sx={{ mt: 3 }}>
-      <Typography variant="h6" sx={{ mb: 1 }}>
+      <Typography variant="h5" sx={{ mb: 1 }}>
         Never Tried Checklist
       </Typography>
       <NeverTriedChecklist

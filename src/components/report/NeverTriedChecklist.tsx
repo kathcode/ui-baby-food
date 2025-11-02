@@ -98,6 +98,8 @@ export function NeverTriedChecklist({
           flexWrap: "wrap",
           gap: 1,
           alignItems: "center",
+          justifyContent: "center",
+
           p: 2,
           borderRadius: 2,
           bgcolor: "background.paper",
@@ -106,7 +108,7 @@ export function NeverTriedChecklist({
         <Typography variant="subtitle1" sx={{ mr: 1 }}>
           Add to catalog
         </Typography>
-        <FormControl size="small" sx={{ minWidth: 160 }}>
+        <FormControl size="small" sx={{ minWidth: 160, mb: 0 }}>
           <InputLabel id="add-type">Type</InputLabel>
           <Select
             labelId="add-type"
@@ -127,6 +129,7 @@ export function NeverTriedChecklist({
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => (e.key === "Enter" ? handleAdd() : null)}
+          sx={{ mb: 0 }}
         />
         <Button startIcon={<AddIcon />} variant="contained" onClick={handleAdd}>
           Add
