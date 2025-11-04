@@ -44,13 +44,7 @@ import HomePage from "./pages/HomePage";
 import { annotateNewFoods } from "./utils/foods";
 import ReportPage from "./pages/ReportPage";
 import ChecklistPage from "./pages/ChecklistPage";
-import {
-  SignedIn,
-  SignedOut,
-  SignIn,
-  SignUp,
-  UserButton,
-} from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignIn, SignUp } from "@clerk/clerk-react";
 
 // Simple guard
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -62,11 +56,6 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
       </SignedOut>
     </>
   );
-}
-
-// Put a user menu (avatar) in your AppBar
-function AppBarRight() {
-  return <UserButton afterSignOutUrl="/sign-in" />;
 }
 
 export default function App() {
