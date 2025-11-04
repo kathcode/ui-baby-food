@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import type { FoodType } from "../types";
-import { entriesApi } from "../api/entries";
+import { useEntriesApi } from "../api/entries";
 import { fromServerEntry } from "../api/types";
 import {
   buildFoodReport,
@@ -55,6 +55,7 @@ export default function ReportPage() {
   const [typeFilter, setTypeFilter] = useState<FoodType | "All">("All");
   const [orderBy, setOrderBy] = useState<SortKey>("lastDate");
   const [order, setOrder] = useState<Order>("desc");
+  const entriesApi = useEntriesApi();
 
   useEffect(() => {
     let alive = true;

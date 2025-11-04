@@ -9,7 +9,7 @@ export type EntryListParams = {
   dateTo?: string; // ISO
 };
 
-export const entriesApi = {
+export const useEntriesApi = () => ({
   list: (p: EntryListParams = {}) =>
     request<Paginated<SEntry>>(
       `/entries?` +
@@ -38,4 +38,4 @@ export const entriesApi = {
 
   remove: (id: string) =>
     request<{ ok: boolean }>(`/entries/${id}`, { method: "DELETE" }),
-};
+});

@@ -1,6 +1,12 @@
 import { AppBar, Toolbar, Button } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import LOGOImage from "../assets/images/logo.png";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
 
 export function HeaderBar() {
   const { pathname } = useLocation();
@@ -50,6 +56,12 @@ export function HeaderBar() {
         >
           Report
         </Button>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </Toolbar>
     </AppBar>
   );

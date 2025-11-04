@@ -8,7 +8,13 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import { HeaderBar } from "./components/HeaderBar";
 import { EntryFormDialog } from "./components/entryFormDialog/EntryFormDialog";
 import { EntryList } from "./components/entryList/EntryList"; // your existing list component
@@ -32,12 +38,36 @@ import {
   saveRecipes,
 } from "./utils/storage";
 import { RecipeNameDialog } from "./components/RecipeNameDialog";
-import { entriesApi } from "./api/entries";
+import { useEntriesApi } from "./api/entries";
 import { fromServerEntry, toServerEntry } from "./api/types";
 import HomePage from "./pages/HomePage";
 import { annotateNewFoods } from "./utils/foods";
 import ReportPage from "./pages/ReportPage";
 import ChecklistPage from "./pages/ChecklistPage";
+import {
+  SignedIn,
+  SignedOut,
+  SignIn,
+  SignUp,
+  UserButton,
+} from "@clerk/clerk-react";
+
+// Simple guard
+function RequireAuth({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <SignedIn>{children}</SignedIn>
+      <SignedOut>
+        <Navigate to="/sign-in" replace />
+      </SignedOut>
+    </>
+  );
+}
+
+// Put a user menu (avatar) in your AppBar
+function AppBarRight() {
+  return <UserButton afterSignOutUrl="/sign-in" />;
+}
 
 export default function App() {
   const [open, setOpen] = useState(false);
@@ -56,6 +86,7 @@ export default function App() {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const entriesApi = useEntriesApi();
 
   useEffect(() => {
     saveEntries(entries);
@@ -255,99 +286,120 @@ export default function App() {
         <Route
           path="/"
           element={
-            <Container sx={{ py: 3 }}>
-              <HomePage />
-            </Container>
+            <RequireAuth>
+              <Container sx={{ py: 3 }}>
+                <HomePage />
+              </Container>
+            </RequireAuth>
           }
         />
 
         <Route
           path="/log"
           element={
-            <Container sx={{ py: 3 }}>
-              <EntryList
-                entries={entries}
-                sortBy={"newest"}
-                onEdit={openEdit}
-                onDelete={requestDelete}
-                onCreate={openCreate}
-              />
+            <RequireAuth>
+              <Container sx={{ py: 3 }}>
+                <EntryList
+                  entries={entries}
+                  sortBy={"newest"}
+                  onEdit={openEdit}
+                  onDelete={requestDelete}
+                  onCreate={openCreate}
+                />
 
-              <EntryFormDialog
-                open={open}
-                mode={mode}
-                form={form}
-                setForm={setForm}
-                onClose={() => setOpen(false)}
-                onSubmit={handleSave}
-                onSaveRecipe={handleSaveRecipeClicked}
-              />
+                <EntryFormDialog
+                  open={open}
+                  mode={mode}
+                  form={form}
+                  setForm={setForm}
+                  onClose={() => setOpen(false)}
+                  onSubmit={handleSave}
+                  onSaveRecipe={handleSaveRecipeClicked}
+                />
 
-              <Dialog open={confirmOpen} onClose={cancelDelete}>
-                <DialogTitle>Delete this entry?</DialogTitle>
-                <DialogActions>
-                  <Button onClick={cancelDelete}>Cancel</Button>
-                  <Button
-                    color="error"
-                    variant="contained"
-                    onClick={confirmDelete}
-                  >
-                    Delete
-                  </Button>
-                </DialogActions>
-              </Dialog>
+                <Dialog open={confirmOpen} onClose={cancelDelete}>
+                  <DialogTitle>Delete this entry?</DialogTitle>
+                  <DialogActions>
+                    <Button onClick={cancelDelete}>Cancel</Button>
+                    <Button
+                      color="error"
+                      variant="contained"
+                      onClick={confirmDelete}
+                    >
+                      Delete
+                    </Button>
+                  </DialogActions>
+                </Dialog>
 
-              <RecipeNameDialog
-                open={recipeDialogOpen}
-                defaultName={recipeDefaultName}
-                onCancel={() => setRecipeDialogOpen(false)}
-                onConfirm={confirmSaveRecipe}
-              />
+                <RecipeNameDialog
+                  open={recipeDialogOpen}
+                  defaultName={recipeDefaultName}
+                  onCancel={() => setRecipeDialogOpen(false)}
+                  onConfirm={confirmSaveRecipe}
+                />
 
-              <Snackbar
-                open={snack.open}
-                autoHideDuration={2500}
-                onClose={() => setSnack((s) => ({ ...s, open: false }))}
-                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-              >
-                <Alert
-                  severity={snack.severity}
-                  variant="filled"
+                <Snackbar
+                  open={snack.open}
+                  autoHideDuration={2500}
                   onClose={() => setSnack((s) => ({ ...s, open: false }))}
+                  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
                 >
-                  {snack.msg}
-                </Alert>
-              </Snackbar>
-            </Container>
+                  <Alert
+                    severity={snack.severity}
+                    variant="filled"
+                    onClose={() => setSnack((s) => ({ ...s, open: false }))}
+                  >
+                    {snack.msg}
+                  </Alert>
+                </Snackbar>
+              </Container>
+            </RequireAuth>
           }
         />
 
         <Route
           path="/recipes"
           element={
-            <Container sx={{ py: 3 }}>
-              <RecipesPage />
-            </Container>
+            <RequireAuth>
+              <Container sx={{ py: 3 }}>
+                <RecipesPage />
+              </Container>
+            </RequireAuth>
           }
         />
 
         <Route
           path="/checklist"
           element={
-            <Container sx={{ py: 3 }}>
-              <ChecklistPage />
-            </Container>
+            <RequireAuth>
+              <Container sx={{ py: 3 }}>
+                <ChecklistPage />
+              </Container>
+            </RequireAuth>
           }
         />
 
         <Route
           path="/report"
           element={
-            <Container sx={{ py: 3 }}>
-              <ReportPage />
-            </Container>
+            <RequireAuth>
+              <Container sx={{ py: 3 }}>
+                <ReportPage />
+              </Container>
+            </RequireAuth>
           }
         />
+        {/* Public auth routes */}
+        <Route
+          path="/sign-in"
+          element={<SignIn routing="path" path="/sign-in" />}
+        />
+        <Route
+          path="/sign-up"
+          element={<SignUp routing="path" path="/sign-up" />}
+        />
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

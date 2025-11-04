@@ -22,7 +22,7 @@ import RecipeDetailsDialog from "../components/RecipeDetailsDialog";
 import { FoodChip } from "../components/ui/FoodChip";
 
 // 🔗 API
-import { recipesApi, type SRecipe, type SFoodItem } from "../api/recipes";
+import { useRecipesApi, type SRecipe, type SFoodItem } from "../api/recipes";
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState<SRecipe[]>([]);
@@ -47,6 +47,7 @@ export default function RecipesPage() {
     severity: "success",
   });
   const navigate = useNavigate();
+  const recipesApi = useRecipesApi();
 
   // Fetch list on mount
   useEffect(() => {

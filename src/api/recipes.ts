@@ -29,7 +29,7 @@ export interface SRecipe {
 export type SRecipeCreate = Omit<SRecipe, "_id" | "createdAt" | "updatedAt">;
 export type SRecipeUpdate = Partial<SRecipeCreate>;
 
-export const recipesApi = {
+export const useRecipesApi = () => ({
   list: (p: EntryListParams = {}) =>
     request<Paginated<SRecipe>>(
       `/recipes?` +
@@ -58,4 +58,4 @@ export const recipesApi = {
 
   remove: (id: string) =>
     request<{ ok: boolean }>(`/recipes/${id}`, { method: "DELETE" }),
-};
+});

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import { entriesApi } from "../api/entries";
+import { useEntriesApi } from "../api/entries";
 import { loadCatalog, saveCustomItem } from "../data/foodCatalog";
 import { triedKeySet } from "../utils/foods";
 import { NeverTriedChecklist } from "../components/report/NeverTriedChecklist";
@@ -11,6 +11,7 @@ export default function ChecklistPage() {
   const [catalog, setCatalog] = useState(loadCatalog());
   const [entries, setEntries] = useState<FoodEntry[]>([]);
   const triedKeys = useMemo(() => triedKeySet(entries), [entries]);
+  const entriesApi = useEntriesApi();
 
   useEffect(() => {
     let alive = true;

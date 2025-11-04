@@ -24,8 +24,8 @@ import RestaurantIcon from "@mui/icons-material/Restaurant";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import TodayIcon from "@mui/icons-material/Today";
 
-import { entriesApi } from "../api/entries";
-import { recipesApi } from "../api/recipes";
+import { useEntriesApi } from "../api/entries";
+import { useRecipesApi } from "../api/recipes";
 import type { SRecipe } from "../api/recipes";
 import { fromServerEntry } from "../api/types";
 import type { FoodEntry } from "../types";
@@ -49,6 +49,8 @@ export default function OverviewPage() {
   const [entriesToday, setEntriesToday] = useState<FoodEntry[]>([]);
   const [entries7d, setEntries7d] = useState<FoodEntry[]>([]);
   const [recipes, setRecipes] = useState<SRecipe[]>([]);
+  const entriesApi = useEntriesApi();
+  const recipesApi = useRecipesApi();
 
   useEffect(() => {
     let alive = true;
