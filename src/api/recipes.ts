@@ -1,3 +1,4 @@
+import { useAuthedFetch } from "./authedFetch";
 import { request } from "./client";
 import type { Paginated } from "./types";
 
@@ -29,33 +30,36 @@ export interface SRecipe {
 export type SRecipeCreate = Omit<SRecipe, "_id" | "createdAt" | "updatedAt">;
 export type SRecipeUpdate = Partial<SRecipeCreate>;
 
-export const useRecipesApi = () => ({
-  list: (p: EntryListParams = {}) =>
-    request<Paginated<SRecipe>>(
-      `/recipes?` +
-        new URLSearchParams({
-          limit: String(p.limit ?? 50),
-          offset: String(p.offset ?? 0),
-          sort: String(p.sort ?? "newest"),
-          ...(p.dateFrom ? { dateFrom: p.dateFrom } : {}),
-          ...(p.dateTo ? { dateTo: p.dateTo } : {}),
-        }).toString()
-    ),
+export const useRecipesApi = () => {
+  const authRequest = useAuthedFetch();
+  return {
+    list: (p: EntryListParams = {}) =>
+      authRequest<Paginated<SRecipe>>(
+        `/recipes?` +
+          new URLSearchParams({
+            limit: String(p.limit ?? 50),
+            offset: String(p.offset ?? 0),
+            sort: String(p.sort ?? "newest"),
+            ...(p.dateFrom ? { dateFrom: p.dateFrom } : {}),
+            ...(p.dateTo ? { dateTo: p.dateTo } : {}),
+          }).toString()
+      ),
 
-  get: (id: string) => request<SRecipe>(`/recipes/${id}`),
+    get: (id: string) => request<SRecipe>(`/recipes/${id}`),
 
-  create: (payload: SRecipeCreate) =>
-    request<SRecipe>(`/recipes`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+    create: (payload: SRecipeCreate) =>
+      authRequest<SRecipe>(`/recipes`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
 
-  update: (id: string, payload: SRecipeUpdate) =>
-    request<SRecipe>(`/recipes/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    }),
+    update: (id: string, payload: SRecipeUpdate) =>
+      authRequest<SRecipe>(`/recipes/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }),
 
-  remove: (id: string) =>
-    request<{ ok: boolean }>(`/recipes/${id}`, { method: "DELETE" }),
-});
+    remove: (id: string) =>
+      authRequest<{ ok: boolean }>(`/recipes/${id}`, { method: "DELETE" }),
+  };
+};

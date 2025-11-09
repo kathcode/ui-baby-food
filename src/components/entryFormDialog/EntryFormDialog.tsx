@@ -62,6 +62,7 @@ export function EntryFormDialog({
   const updateItem = (idx: number, patch: Partial<FoodItem>) =>
     setForm((f) => ({
       ...f,
+      ...patch,
       items: f.items.map((it, i) => (i === idx ? { ...it, ...patch } : it)),
     }));
 
