@@ -1,5 +1,5 @@
-import { request } from "./client";
-import type { Paginated, SEntry, SEntryCreate, SEntryUpdate } from "./types";
+import { useAuthedFetch } from "./authedFetch";
+import type { SEntry, SEntryCreate, SEntryUpdate } from "./types";
 
 export type EntryListParams = {
   limit?: number;
@@ -9,33 +9,36 @@ export type EntryListParams = {
   dateTo?: string; // ISO
 };
 
-export const useEntriesApi = () => ({
-  list: (p: EntryListParams = {}) =>
-    request<Paginated<SEntry>>(
-      `/entries?` +
-        new URLSearchParams({
-          limit: String(p.limit ?? 50),
-          offset: String(p.offset ?? 0),
-          sort: String(p.sort ?? "newest"),
-          ...(p.dateFrom ? { dateFrom: p.dateFrom } : {}),
-          ...(p.dateTo ? { dateTo: p.dateTo } : {}),
-        }).toString()
-    ),
+export const useEntriesApi = () => {
+  const authRequest = useAuthedFetch();
+  return {
+    list: (p: EntryListParams = {}) =>
+      authRequest(
+        `/entries?` +
+          new URLSearchParams({
+            limit: String(p.limit ?? 50),
+            offset: String(p.offset ?? 0),
+            sort: String(p.sort ?? "newest"),
+            ...(p.dateFrom ? { dateFrom: p.dateFrom } : {}),
+            ...(p.dateTo ? { dateTo: p.dateTo } : {}),
+          }).toString()
+      ),
 
-  get: (id: string) => request<SEntry>(`/entries/${id}`),
+    get: (id: string) => authRequest<SEntry>(`/entries/${id}`),
 
-  create: (payload: SEntryCreate) =>
-    request<SEntry>(`/entries`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+    create: (payload: SEntryCreate) =>
+      authRequest<SEntry>(`/entries`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
 
-  update: (id: string, payload: SEntryUpdate) =>
-    request<SEntry>(`/entries/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    }),
+    update: (id: string, payload: SEntryUpdate) =>
+      authRequest<SEntry>(`/entries/${id}`, {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }),
 
-  remove: (id: string) =>
-    request<{ ok: boolean }>(`/entries/${id}`, { method: "DELETE" }),
-});
+    remove: (id: string) =>
+      authRequest<{ ok: boolean }>(`/entries/${id}`, { method: "DELETE" }),
+  };
+};

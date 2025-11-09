@@ -387,8 +387,6 @@ export default function App() {
           path="/sign-up"
           element={<SignUp routing="path" path="/sign-up" />}
         />
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );
