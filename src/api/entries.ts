@@ -1,5 +1,5 @@
 import { useAuthedFetch } from "./authedFetch";
-import type { SEntry, SEntryCreate, SEntryUpdate } from "./types";
+import type { Paginated, SEntry, SEntryCreate, SEntryUpdate } from "./types";
 
 export type EntryListParams = {
   limit?: number;
@@ -13,7 +13,7 @@ export const useEntriesApi = () => {
   const authRequest = useAuthedFetch();
   return {
     list: (p: EntryListParams = {}) =>
-      authRequest(
+      authRequest<Paginated<SEntry>>(
         `/entries?` +
           new URLSearchParams({
             limit: String(p.limit ?? 50),
