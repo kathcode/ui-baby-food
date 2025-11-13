@@ -7,6 +7,7 @@ import {
   Button,
   Snackbar,
   Alert,
+  Box,
 } from "@mui/material";
 import {
   Routes,
@@ -381,11 +382,19 @@ export default function App() {
         {/* Public auth routes */}
         <Route
           path="/sign-in"
-          element={<SignIn routing="path" path="/sign-in" />}
+          element={
+            <Box display="flex" alignItems="center" justifyContent="center">
+              <SignIn routing="path" path="/sign-in" />
+            </Box>
+          }
         />
         <Route
           path="/sign-up"
-          element={<SignUp routing="path" path="/sign-up" />}
+          element={
+            <Box display="flex" alignItems="center" justifyContent="center">
+              <SignUp routing="path" path="/sign-up" />
+            </Box>
+          }
         />
       </Routes>
     </>
