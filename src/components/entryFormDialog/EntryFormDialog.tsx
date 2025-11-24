@@ -45,7 +45,7 @@ export function EntryFormDialog({
   setForm: React.Dispatch<React.SetStateAction<FormState>>;
   onClose: () => void;
   onSubmit: () => void;
-  onSaveRecipe: (recipe: { name: string; items: FoodItem[] }) => void; // NEW
+  onSaveRecipe: () => void; // NEW
 }) {
   const isValid = useMemo(() => {
     const hasItems =
@@ -79,9 +79,7 @@ export function EntryFormDialog({
     setForm((f) => ({ ...f, items: f.items.filter((_, i) => i !== idx) }));
 
   const handleSaveRecipe = () => {
-    const name = prompt("Enter recipe name:");
-    if (!name) return;
-    const items = form.items
+    const ingredientsList = form.items
       .map((it) => ({
         name: it.name.trim(),
         type: it.type,
@@ -89,8 +87,8 @@ export function EntryFormDialog({
         amountUnit: it.amountUnit,
       }))
       .filter((it) => it.name);
-    if (items.length === 0) return;
-    onSaveRecipe({ name: name.trim(), items });
+    if (ingredientsList.length === 0) return;
+    onSaveRecipe();
   };
 
   return (

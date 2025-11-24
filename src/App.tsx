@@ -40,6 +40,7 @@ import {
 } from "./utils/storage";
 import { RecipeNameDialog } from "./components/RecipeNameDialog";
 import { useEntriesApi } from "./api/entries";
+import { useRecipesApi } from "./api/recipes";
 import { fromServerEntry, toServerEntry } from "./api/types";
 import HomePage from "./pages/HomePage";
 import { annotateNewFoods } from "./utils/foods";
@@ -77,6 +78,7 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const entriesApi = useEntriesApi();
+  const recipesApi = useRecipesApi();
 
   useEffect(() => {
     saveEntries(entries);
@@ -154,29 +156,35 @@ export default function App() {
     setOpen(true);
   };
 
+  const getCleanedItems = form.items.map<FoodItem>((it) => ({
+    name: it.name.trim(),
+    type: it.type,
+    amount: typeof it.amount === "number" ? it.amount : undefined,
+    amountUnit: it.amountUnit,
+  }));
+
+  const parseFoodEntry = () => {
+    const newEntry: FoodEntry = {
+      id: crypto.randomUUID(),
+      date: form.date || new Date(),
+      items: getCleanedItems,
+      typeOfMeal: form.typeOfMeal as MealType,
+      amount: form.amount === "" ? undefined : Number(form.amount),
+      amountUnit: (form.amount === "" ? undefined : form.amountUnit || "ml") as
+        | AmountUnit
+        | undefined,
+      reaction: form.reaction || undefined,
+      rating: form.rating || 0,
+    };
+
+    return newEntry;
+  };
+
   const handleSave = async () => {
     if (!form.date) return;
-    const cleanedItems = form.items.map<FoodItem>((it) => ({
-      name: it.name.trim(),
-      type: it.type,
-      amount: typeof it.amount === "number" ? it.amount : undefined,
-      amountUnit: it.amountUnit,
-    }));
-
     if (mode === "create") {
-      const newEntry: FoodEntry = {
-        id: crypto.randomUUID(),
-        date: form.date,
-        items: cleanedItems,
-        typeOfMeal: form.typeOfMeal as MealType,
-        amount: form.amount === "" ? undefined : Number(form.amount),
-        amountUnit: (form.amount === ""
-          ? undefined
-          : form.amountUnit || "ml") as AmountUnit | undefined,
-        reaction: form.reaction || undefined,
-        rating: form.rating || 0,
-      };
-      const saved = await entriesApi.create(toServerEntry(newEntry));
+      const getNewEntryParsed = parseFoodEntry();
+      const saved = await entriesApi.create(toServerEntry(getNewEntryParsed));
       const fe = fromServerEntry(saved);
       setEntries((prev) => [fe, ...prev]);
       setOpen(false);
@@ -187,7 +195,7 @@ export default function App() {
             ? {
                 ...e,
                 date: form.date!,
-                items: cleanedItems,
+                items: getCleanedItems,
                 typeOfMeal: form.typeOfMeal as MealType,
                 amount: form.amount === "" ? undefined : Number(form.amount),
                 amountUnit: (form.amount === ""
@@ -219,6 +227,7 @@ export default function App() {
     setPendingDeleteId(id);
     setConfirmOpen(true);
   };
+
   const confirmDelete = async () => {
     if (!pendingDeleteId) return;
     try {
@@ -230,21 +239,21 @@ export default function App() {
     setPendingDeleteId(null);
     setConfirmOpen(false);
   };
+
   const cancelDelete = () => {
     setPendingDeleteId(null);
     setConfirmOpen(false);
   };
 
   const handleSaveRecipeClicked = () => {
-    // build a friendly default name from current rows if available
     const names = form.items.map((it) => it.name).filter(Boolean);
     setRecipeDefaultName(names.length ? names.join(", ") : "");
     setRecipeDialogOpen(true);
   };
 
-  const confirmSaveRecipe = async (name: string) => {
+  const confirmSaveRecipe = async (name: string, description: string) => {
     const items = form.items
-      .map((it) => ({ name: it.name.trim(), type: it.type }))
+      .map((it) => ({ ...it, name: it.name.trim(), type: it.type }))
       .filter((it) => it.name); // only non-empty
 
     if (items.length === 0) {
@@ -259,13 +268,19 @@ export default function App() {
 
     const newRecipe: Recipe = { id: crypto.randomUUID(), name, items };
     setRecipes((prev) => [newRecipe, ...prev]);
-    //const saved = await entriesApi.create(toServerEntryFromForm(newEntry));
-    setRecipeDialogOpen(false);
-    setSnack({
-      open: true,
-      msg: `Recipe “${name}” saved.`,
-      severity: "success",
+    const saved = await recipesApi.create({
+      name: name,
+      description: description,
+      items: items,
     });
+    setRecipeDialogOpen(false);
+    if (saved) {
+      setSnack({
+        open: true,
+        msg: `Recipe “${name}” saved.`,
+        severity: "success",
+      });
+    }
   };
 
   return (

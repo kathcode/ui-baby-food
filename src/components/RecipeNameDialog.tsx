@@ -17,9 +17,10 @@ export function RecipeNameDialog({
   open: boolean;
   defaultName?: string;
   onCancel: () => void;
-  onConfirm: (name: string) => void;
+  onConfirm: (name: string, description: string) => void;
 }) {
   const [name, setName] = useState(defaultName);
+  const [description, setDescription] = useState("");
   useEffect(() => {
     setName(defaultName);
   }, [defaultName, open]);
@@ -39,13 +40,22 @@ export function RecipeNameDialog({
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g., Banana & Yogurt Mix"
         />
+        <TextField
+          autoFocus
+          fullWidth
+          margin="dense"
+          label="Recipe description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="e.g., Banana & Yogurt Mix"
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>Cancel</Button>
         <Button
           disabled={!canConfirm}
           variant="contained"
-          onClick={() => onConfirm(name.trim())}
+          onClick={() => onConfirm(name.trim(), description)}
         >
           Save
         </Button>
