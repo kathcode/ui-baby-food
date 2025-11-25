@@ -47,6 +47,9 @@ export function EntryFormDialog({
   onSubmit: () => void;
   onSaveRecipe: () => void; // NEW
 }) {
+  if (!form.date) {
+    form.date = new Date();
+  }
   const isValid = useMemo(() => {
     const hasItems =
       form.items.length > 0 &&
@@ -56,7 +59,7 @@ export function EntryFormDialog({
           it.type &&
           (typeof it.amount !== "number" || !!it.amountUnit) // if amount, require unit
       );
-    return Boolean(form.date && form.typeOfMeal && hasItems && form.rating > 0);
+    return Boolean(form.typeOfMeal && hasItems && form.rating > 0);
   }, [form]);
 
   const updateItem = (idx: number, patch: Partial<FoodItem>) =>
