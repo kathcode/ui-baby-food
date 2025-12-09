@@ -46,7 +46,14 @@ import HomePage from "./pages/HomePage";
 import { annotateNewFoods } from "./utils/foods";
 import ReportPage from "./pages/ReportPage";
 import ChecklistPage from "./pages/ChecklistPage";
-import { SignedIn, SignedOut, SignIn, SignUp } from "@clerk/clerk-react";
+import {
+  AuthenticateWithRedirectCallback,
+  SignedIn,
+  SignedOut,
+  SignIn,
+  SignUp,
+} from "@clerk/clerk-react";
+import SSOCallbackPage from "./pages/SSOCallbackPage";
 
 // Simple guard
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -395,21 +402,11 @@ export default function App() {
           }
         />
         {/* Public auth routes */}
+        <Route path="/sign-in/*" element={<SignIn signUpUrl="/sign-up" />} />
+        <Route path="/sign-up/*" element={<SignUp signInUrl="/sign-in" />} />
         <Route
-          path="/sign-in"
-          element={
-            <Box display="flex" alignItems="center" justifyContent="center">
-              <SignIn routing="path" path="/sign-in" />
-            </Box>
-          }
-        />
-        <Route
-          path="/sign-up"
-          element={
-            <Box display="flex" alignItems="center" justifyContent="center">
-              <SignUp routing="path" path="/sign-up" />
-            </Box>
-          }
+          path="/sso-callback"
+          element={<AuthenticateWithRedirectCallback />}
         />
       </Routes>
     </>
