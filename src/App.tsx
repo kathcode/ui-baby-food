@@ -7,7 +7,6 @@ import {
   Button,
   Snackbar,
   Alert,
-  Box,
 } from "@mui/material";
 import {
   Routes,
