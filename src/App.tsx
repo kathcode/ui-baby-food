@@ -53,7 +53,6 @@ import {
   SignIn,
   SignUp,
 } from "@clerk/clerk-react";
-import SSOCallbackPage from "./pages/SSOCallbackPage";
 
 // Simple guard
 function RequireAuth({ children }: { children: React.ReactNode }) {
