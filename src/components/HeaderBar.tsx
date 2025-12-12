@@ -10,7 +10,6 @@ import {
 
 export function HeaderBar() {
   const { pathname } = useLocation();
-  console.log(pathname);
 
   return (
     <AppBar position="sticky" elevation={0}>
