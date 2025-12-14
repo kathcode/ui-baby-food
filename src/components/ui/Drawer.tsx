@@ -24,9 +24,9 @@ const nav = [
   { icon: <LocalDiningRoundedIcon />, label: "Log", link: "/log" },
   { icon: <FavoriteRoundedIcon />, label: "Recipes", link: "/recipes" },
   { icon: <PictureAsPdfRoundedIcon />, label: "Reports", link: "/report" },
-  { icon: <InsightsRoundedIcon />, label: "Insights", link: "/" },
-  { icon: <PeopleAltRoundedIcon />, label: "Caregivers", link: "/" },
-  { icon: <SettingsRoundedIcon />, label: "Settings", link: "/" },
+  { icon: <InsightsRoundedIcon />, label: "Insights", link: "" },
+  { icon: <PeopleAltRoundedIcon />, label: "Caregivers", link: "" },
+  { icon: <SettingsRoundedIcon />, label: "Settings", link: "" },
 ];
 
 export const DrawerComponent = () => {
@@ -50,6 +50,7 @@ export const DrawerComponent = () => {
             }}
             selected={item.label === "Dashboard"}
             onClick={() => navigate(item.link)}
+            disabled={!item.link}
           >
             <ListItemIcon sx={{ minWidth: 36, color: "text.secondary" }}>
               {item.icon}
