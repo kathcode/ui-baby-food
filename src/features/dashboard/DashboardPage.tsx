@@ -22,8 +22,14 @@ import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import ShieldMoonRoundedIcon from "@mui/icons-material/ShieldMoonRounded";
+import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import CakeRoundedIcon from "@mui/icons-material/CakeRounded";
+
 import { LineChart } from "./components/LineChart";
 import { Metric } from "./components/Metric";
+import theme from "../../theme";
 
 // ---------- Mock data (swap with real later) ----------
 const weeklyMeals = [4, 5, 5, 6, 5, 4, 6];
@@ -37,6 +43,19 @@ const exposures = [
   { name: "Peanut", done: 0, total: 3, next: "Sat" },
   { name: "Dairy", done: 0, total: 3, next: "Mon" },
 ];
+const baby = {
+  name: "Luca",
+  ageLabel: "9 mo",
+  dob: "Mar 5",
+  avatar: "L",
+  tags: [
+    {
+      label: "Gentle textures",
+      icon: <ShieldMoonRoundedIcon fontSize="small" />,
+    },
+    { label: "Favorites", icon: <FavoriteRoundedIcon fontSize="small" /> },
+  ],
+};
 
 export default function DashboardPage() {
   return (
@@ -52,8 +71,90 @@ export default function DashboardPage() {
         }}
       >
         <Grid container spacing={2.5}>
+          {/* Baby header (NEW) */}
+          <Grid size={{ xs: 12, md: 3 }}>
+            <Card
+              elevation={0}
+              sx={{
+                overflow: "hidden",
+                border: "1px solid",
+                borderColor: "divider",
+                background:
+                  theme.palette.mode === "light"
+                    ? "linear-gradient(180deg, #F8FBFF 0%, #FFFFFF 60%)"
+                    : "linear-gradient(180deg, rgba(82,194,157,0.10) 0%, transparent 60%)",
+              }}
+            >
+              {/* Soft top gradient bar */}
+              <Box
+                sx={{
+                  height: 6,
+                  background:
+                    "linear-gradient(90deg, #5AA0E6 0%, #52C29D 100%)",
+                }}
+              />
+
+              <CardContent
+                sx={{ py: { xs: 2, sm: 2.5 }, px: { xs: 2, sm: 3 } }}
+              >
+                <Stack
+                  direction={{ xs: "column", sm: "column" }}
+                  alignItems={{ xs: "flex-start", sm: "center" }}
+                  spacing={2}
+                >
+                  <Box component="div">
+                    <Avatar
+                      src={
+                        "https://robohash.org/f520cefe48e7afc5b62e0ec7d19f000e?set=set4&bgset=&size=400x400"
+                      }
+                      alt={baby.name}
+                      sx={{
+                        width: 100,
+                        height: 100,
+                        bgcolor: "primary.main",
+                        fontWeight: 800,
+                        fontSize: 28,
+                      }}
+                    >
+                      {baby.avatar}
+                    </Avatar>
+                  </Box>
+
+                  <Box component="div">
+                    <Stack alignItems="center" spacing={1} flexWrap="wrap">
+                      <Typography
+                        variant="h5"
+                        fontWeight={800}
+                        sx={{ mr: 0.5, lineHeight: 1.2 }}
+                      >
+                        {baby.name}
+                      </Typography>
+                    </Stack>
+
+                    <Chip
+                      size="small"
+                      icon={<CakeRoundedIcon />}
+                      label={baby.ageLabel}
+                      sx={{ height: 24, mr: 1 }}
+                    />
+
+                    {baby.dob && (
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        icon={<CalendarMonthRoundedIcon />}
+                        label={`DOB: ${baby.dob}`}
+                        sx={{ height: 24 }}
+                      />
+                    )}
+                  </Box>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Grid>
+
           {/* Top metrics */}
-          <Grid item xs={12} md={3.5}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Metric
               title="Meals today"
               value={5}
@@ -61,7 +162,8 @@ export default function DashboardPage() {
               color="primary"
             />
           </Grid>
-          <Grid item xs={12} md={3.5}>
+
+          <Grid size={{ xs: 12, md: 3 }}>
             <Metric
               title="New foods"
               value={1}
@@ -70,7 +172,8 @@ export default function DashboardPage() {
               progress={33}
             />
           </Grid>
-          <Grid item xs={12} md={5}>
+
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card variant="outlined" sx={{ height: "100%" }}>
               <CardHeader
                 title={
@@ -92,7 +195,7 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Today's Overview & Quick Actions */}
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Card variant="outlined">
               <CardHeader
                 title="Today’s overview"
@@ -152,7 +255,7 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Allergen exposures */}
-          <Grid item xs={12} md={5}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Card variant="outlined">
               <CardHeader
                 title="Allergen exposures"
@@ -206,7 +309,7 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Recent logs */}
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card variant="outlined">
               <CardHeader title="Recent logs" subheader="Today" />
               <CardContent>
@@ -249,7 +352,7 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Caregiver activity */}
-          <Grid item xs={12} md={5}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card variant="outlined">
               <CardHeader title="Caregiver activity" subheader="Last 24h" />
               <CardContent>
@@ -290,7 +393,7 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Favorites + quick links */}
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card variant="outlined">
               <CardHeader title="Favorites" subheader="One-tap logging" />
               <CardContent>
@@ -316,7 +419,7 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Safety note */}
-          <Grid item xs={12} md={5}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card
               variant="outlined"
               sx={{ background: "linear-gradient(180deg, #FFFDF5, #FFFFFF)" }}
