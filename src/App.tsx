@@ -1,10 +1,7 @@
 import { Container } from "@mui/material";
 import { Routes, Route, Navigate } from "react-router-dom";
-
 import RecipesPage from "./pages/RecipesPage";
-
 import HomePage from "./pages/HomePage";
-
 import ReportPage from "./pages/ReportPage";
 import ChecklistPage from "./pages/ChecklistPage";
 import {

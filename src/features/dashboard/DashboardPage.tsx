@@ -1,46 +1,20 @@
-import * as React from "react";
 import {
-  AppBar,
   Avatar,
-  Badge,
   Box,
   Button,
   Card,
   CardContent,
   CardHeader,
   Chip,
-  CssBaseline,
-  Divider,
-  Drawer,
   Grid,
-  IconButton,
-  InputAdornment,
   LinearProgress,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Rating,
   Stack,
-  TextField,
-  Toolbar,
   Typography,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 
 // Icons
-import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import LocalDiningRoundedIcon from "@mui/icons-material/LocalDiningRounded";
 import NoteAddRoundedIcon from "@mui/icons-material/NoteAddRounded";
-import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
-import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
-import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
-import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import EggRoundedIcon from "@mui/icons-material/EggRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
@@ -50,20 +24,6 @@ import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { LineChart } from "./components/LineChart";
 import { Metric } from "./components/Metric";
-
-const drawerWidth = 280;
-
-// ---------- Sidebar items ----------
-const nav = [
-  { icon: <HomeRoundedIcon />, label: "Dashboard" },
-  { icon: <LocalDiningRoundedIcon />, label: "Log" },
-  { icon: <NoteAddRoundedIcon />, label: "New Food" },
-  { icon: <FavoriteRoundedIcon />, label: "Recipes" },
-  { icon: <InsightsRoundedIcon />, label: "Insights" },
-  { icon: <PictureAsPdfRoundedIcon />, label: "Reports" },
-  { icon: <PeopleAltRoundedIcon />, label: "Caregivers" },
-  { icon: <SettingsRoundedIcon />, label: "Settings" },
-];
 
 // ---------- Mock data (swap with real later) ----------
 const weeklyMeals = [4, 5, 5, 6, 5, 4, 6];

@@ -3,17 +3,14 @@ import {
   Badge,
   Box,
   IconButton,
-  InputAdornment,
   Stack,
-  TextField,
   Toolbar,
-  Typography,
   AppBar,
 } from "@mui/material";
 
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
-import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import LOGOImage from "../../assets/images/logo.png";
 
 export const AppBarComponent = ({
   setOpen,
@@ -48,32 +45,16 @@ export const AppBarComponent = ({
           <Stack
             direction="row"
             alignItems="center"
+            justifyContent="center"
             spacing={1.2}
-            sx={{ mr: 2 }}
-          >
-            Logo
-            <Typography
-              variant="subtitle1"
-              fontWeight={800}
-              sx={{ display: { xs: "none", sm: "inline" } }}
-            >
-              SnugBitesBaby
-            </Typography>
-          </Stack>
-
-          <TextField
-            fullWidth
-            placeholder="Search foods, logs, caregivers…"
-            size="small"
-            sx={{ maxWidth: 520 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchRoundedIcon fontSize="small" />
-                </InputAdornment>
-              ),
+            sx={{
+              width: "280px",
+              marginLeft: "-24px",
+              borderRight: "1px solid rgba(0, 0, 0, 0.12)!important",
             }}
-          />
+          >
+            <img src={LOGOImage} width={80} alt="logo" />
+          </Stack>
 
           <Box sx={{ flexGrow: 1 }} />
           <IconButton>

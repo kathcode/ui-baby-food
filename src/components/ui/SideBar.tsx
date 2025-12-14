@@ -1,17 +1,8 @@
 import * as React from "react";
 import {
-  AppBar,
-  Avatar,
-  Badge,
   Box,
   CssBaseline,
   Drawer,
-  IconButton,
-  InputAdornment,
-  Stack,
-  TextField,
-  Toolbar,
-  Typography,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -61,7 +52,7 @@ export default function DashboardPage({
             },
           }}
         >
-          {DrawerComponent}
+          <DrawerComponent />
         </Drawer>
       </Box>
       {/* Main content */}
