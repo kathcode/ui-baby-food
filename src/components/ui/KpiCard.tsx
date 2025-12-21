@@ -42,10 +42,6 @@ export function KpiCard({
         bgcolor: "background.paper",
         backgroundImage: bg,
         transition: "transform .18s ease, box-shadow .18s ease",
-        "&:hover": {
-          transform: "translateY(-2px)",
-          boxShadow: theme.shadows[4],
-        },
       }}
     >
       <Box

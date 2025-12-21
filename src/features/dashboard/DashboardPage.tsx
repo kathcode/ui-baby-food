@@ -17,8 +17,6 @@ import {
 import NoteAddRoundedIcon from "@mui/icons-material/NoteAddRounded";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import EggRoundedIcon from "@mui/icons-material/EggRounded";
-import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import BarChartRoundedIcon from "@mui/icons-material/BarChartRounded";
 import DownloadRoundedIcon from "@mui/icons-material/DownloadRounded";
 import ShareRoundedIcon from "@mui/icons-material/ShareRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
@@ -26,13 +24,30 @@ import ShieldMoonRoundedIcon from "@mui/icons-material/ShieldMoonRounded";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import CakeRoundedIcon from "@mui/icons-material/CakeRounded";
-
-import { LineChart } from "./components/LineChart";
 import { Metric } from "./components/Metric";
 import theme from "../../theme";
+import { useEffect, useMemo, useState } from "react";
+import type { FoodEntry } from "../../types";
+import {
+  endOfDay,
+  format,
+  isSameDay,
+  startOfDay,
+  startOfWeek,
+  subDays,
+} from "date-fns";
+import { useEntriesApi } from "../../api/entries";
+import { useRecipesApi, type SRecipe } from "../../api/recipes";
+import { fromServerEntry } from "../../api/types";
+import {
+  annotateNewFoods,
+  FOOD_TYPES,
+  hasNewFlag,
+  normalizeFoodName,
+} from "../../utils/foods";
+import { BarChart, PieChart } from "@mui/x-charts";
 
 // ---------- Mock data (swap with real later) ----------
-const weeklyMeals = [4, 5, 5, 6, 5, 4, 6];
 const recentLogs = [
   { time: "07:45", title: "Oat + Banana", amount: "120 ml", rating: 4 },
   { time: "11:50", title: "Lentil mash + carrot", amount: "80 g", rating: 5 },
@@ -44,7 +59,7 @@ const exposures = [
   { name: "Dairy", done: 0, total: 3, next: "Mon" },
 ];
 const baby = {
-  name: "Luca",
+  name: "Matthew",
   ageLabel: "9 mo",
   dob: "Mar 5",
   avatar: "L",
@@ -58,6 +73,118 @@ const baby = {
 };
 
 export default function DashboardPage() {
+  const [entriesToday, setEntriesToday] = useState<FoodEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+  const [entries7d, setEntries7d] = useState<FoodEntry[]>([]);
+  const [recipes, setRecipes] = useState<SRecipe[]>([]);
+
+  const entriesApi = useEntriesApi();
+  const recipesApi = useRecipesApi();
+
+  useEffect(() => {
+    let alive = true;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setErr(null);
+
+        const today = new Date();
+        const fromToday = startOfDay(today).toISOString();
+        const toToday = endOfDay(today).toISOString();
+
+        const from7d = startOfDay(subDays(today, 6)).toISOString();
+        const to7d = endOfDay(today).toISOString();
+
+        const [entriesTodayRes, entries7dRes, recipesRes] = await Promise.all([
+          entriesApi.list({ dateFrom: fromToday, dateTo: toToday }),
+          entriesApi.list({ dateFrom: from7d, dateTo: to7d, limit: 50 }), // plenty
+          recipesApi.list(),
+        ]);
+
+        if (!alive) return;
+
+        const mappedToday = entriesTodayRes.items.map(fromServerEntry);
+        const mapped7d = entries7dRes.items.map(fromServerEntry);
+
+        // mark newness for this week
+        const weeklyCutoff = startOfWeek(new Date(), { weekStartsOn: 1 }); // Monday
+        const entries7dWithFlags = annotateNewFoods(mapped7d, weeklyCutoff);
+        setEntries7d(entries7dWithFlags);
+
+        setEntriesToday(
+          mappedToday.filter((e) => isSameDay(e.date, new Date()))
+        );
+
+        setRecipes(recipesRes.items);
+      } catch (e: unknown) {
+        if (!alive) return;
+        setErr(e instanceof Error ? e.message : "Failed to load overview");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const newFoodsThisWeekCount = useMemo(() => {
+    const s = new Set<string>();
+    entries7d.forEach((e) => {
+      e.items.forEach((it) => {
+        if (hasNewFlag(it) && it.__isNew) s.add(normalizeFoodName(it.name));
+      });
+    });
+    return s.size;
+  }, [entries7d]);
+
+  // --- Build last-7-days axis labels ---
+  const last7Dates = useMemo(() => {
+    const arr: Date[] = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) arr.push(subDays(today, i));
+    return arr;
+  }, []);
+
+  // --- KPIs ---
+  const mealsTodayCount = entriesToday.length;
+  const recipesCount = recipes.length;
+  const barLabels = last7Dates.map((d) => format(d, "EEE")); // Mon, Tue, ...
+
+  // --- Bar data: meals per day ---
+  const mealsPerDay = useMemo(() => {
+    return last7Dates.map(
+      (d) => entries7d.filter((e) => isSameDay(e.date, d)).length
+    );
+  }, [entries7d, last7Dates]);
+
+  // --- Pie data: food type distribution across all items in last 7 days ---
+  const typeTotals = useMemo(() => {
+    const counts: Record<string, number> = {
+      Fruit: 0,
+      Carbohydrates: 0,
+      Protein: 0,
+      Vegetables: 0,
+    };
+    entries7d.forEach((e) => {
+      e.items.forEach((it) => {
+        if (counts[it.type] !== undefined) counts[it.type] += 1;
+      });
+    });
+    return counts;
+  }, [entries7d]);
+
+  const pieData = FOOD_TYPES.map((t, i) => ({
+    id: i,
+    label: t,
+    value: typeTotals[t] || 0,
+  }));
+  const hasPieValues = pieData.some((p) => p.value > 0);
+
   return (
     <Box>
       {/* Main content */}
@@ -157,8 +284,12 @@ export default function DashboardPage() {
           <Grid size={{ xs: 12, md: 3 }}>
             <Metric
               title="Meals today"
-              value={5}
-              caption="07:30 – 18:30"
+              value={mealsTodayCount}
+              caption={
+                mealsTodayCount === 0
+                  ? "No foods logged yet"
+                  : `${mealsTodayCount} items recorded`
+              }
               color="primary"
             />
           </Grid>
@@ -166,32 +297,20 @@ export default function DashboardPage() {
           <Grid size={{ xs: 12, md: 3 }}>
             <Metric
               title="New foods"
-              value={1}
-              caption="Egg (1/3 exposures)"
-              color="success"
+              value={newFoodsThisWeekCount || "—"}
+              caption="1/3 exposures in the week"
+              color="primary"
               progress={33}
             />
           </Grid>
 
           <Grid size={{ xs: 12, md: 3 }}>
-            <Card variant="outlined" sx={{ height: "100%" }}>
-              <CardHeader
-                title={
-                  <Typography variant="subtitle2">Weekly trend</Typography>
-                }
-                action={
-                  <Chip
-                    icon={<BarChartRoundedIcon />}
-                    label="7 days"
-                    size="small"
-                  />
-                }
-                sx={{ pb: 0.5 }}
-              />
-              <CardContent sx={{ pt: 0.5 }}>
-                <LineChart data={weeklyMeals} />
-              </CardContent>
-            </Card>
+            <Metric
+              title="Recipes saved"
+              value={recipesCount || "—"}
+              caption="Total recipes in your cookbook"
+              color="primary"
+            />
           </Grid>
 
           {/* Today's Overview & Quick Actions */}
@@ -272,7 +391,6 @@ export default function DashboardPage() {
                           direction="row"
                           justifyContent="space-between"
                           alignItems="center"
-                          sx={{ mb: 0.5 }}
                         >
                           <Typography fontWeight={700}>{e.name}</Typography>
                           <Chip
@@ -305,6 +423,39 @@ export default function DashboardPage() {
                   </Button>
                 </Stack>
               </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Card sx={{ p: 2 }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Meals per day (last 7 days)
+              </Typography>
+              <BarChart
+                xAxis={[{ scaleType: "band", data: barLabels }]}
+                series={[{ data: mealsPerDay }]}
+                height={280}
+                margin={{ top: 20, right: 20, bottom: 20, left: 40 }}
+              />
+            </Card>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6, lg: 6 }}>
+            <Card sx={{ p: 2 }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                Food types (last 7 days)
+              </Typography>
+              {hasPieValues ? (
+                <PieChart
+                  series={[{ data: pieData, innerRadius: 30, paddingAngle: 4 }]}
+                  height={280}
+                  margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                />
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  No food items recorded in the last 7 days
+                </Typography>
+              )}
             </Card>
           </Grid>
 
@@ -351,47 +502,6 @@ export default function DashboardPage() {
             </Card>
           </Grid>
 
-          {/* Caregiver activity */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Card variant="outlined">
-              <CardHeader title="Caregiver activity" subheader="Last 24h" />
-              <CardContent>
-                <Stack spacing={1.25}>
-                  {[
-                    { who: "Ana", action: "added Lunch log", time: "12:03" },
-                    {
-                      who: "Mark",
-                      action: "viewed Weekly insights",
-                      time: "09:20",
-                    },
-                    {
-                      who: "Ana",
-                      action: "joined as caregiver",
-                      time: "08:02",
-                    },
-                  ].map((item, i) => (
-                    <Stack
-                      key={i}
-                      direction="row"
-                      alignItems="center"
-                      spacing={1.5}
-                    >
-                      <Avatar sx={{ width: 32, height: 32 }}>
-                        {item.who[0]}
-                      </Avatar>
-                      <Typography sx={{ flex: 1 }}>
-                        <b>{item.who}</b> {item.action}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {item.time}
-                      </Typography>
-                    </Stack>
-                  ))}
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-
           {/* Favorites + quick links */}
           <Grid size={{ xs: 12, md: 6 }}>
             <Card variant="outlined">
@@ -414,27 +524,6 @@ export default function DashboardPage() {
                     />
                   ))}
                 </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Safety note */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <Card
-              variant="outlined"
-              sx={{ background: "linear-gradient(180deg, #FFFDF5, #FFFFFF)" }}
-            >
-              <CardHeader
-                avatar={<WarningAmberRoundedIcon color="warning" />}
-                title="Safety reminder"
-                subheader="Textures first, then flavors."
-              />
-              <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  Offer mashable textures and avoid round/hard/slippery shapes.
-                  Always supervise and consult your pediatrician for allergens
-                  and portions.
-                </Typography>
               </CardContent>
             </Card>
           </Grid>

@@ -42,3 +42,42 @@ export function triedKeySet(entries: FoodEntry[]) {
   }
   return s;
 }
+
+// Narrowing helper for optional flag added by annotateNewFoods
+export function hasNewFlag(it: unknown): it is { __isNew?: boolean } {
+  return typeof it === "object" && it !== null && "__isNew" in it;
+}
+
+export const FOOD_TYPES = [
+  "Fruit",
+  "Carbohydrates",
+  "Protein",
+  "Vegetables",
+] as const;
+
+export const sortFood = (arr: any, sortBy: string) => {
+  switch (sortBy) {
+    case "newest":
+      arr.sort((a, b) => b.date.getTime() - a.date.getTime());
+      break;
+    case "oldest":
+      arr.sort((a, b) => a.date.getTime() - b.date.getTime());
+      break;
+    case "rating_desc":
+      arr.sort(
+        (a, b) =>
+          (b.rating ?? 0) - (a.rating ?? 0) ||
+          b.date.getTime() - a.date.getTime()
+      );
+      break;
+    case "rating_asc":
+      arr.sort(
+        (a, b) =>
+          (a.rating ?? 0) - (b.rating ?? 0) ||
+          b.date.getTime() - a.date.getTime()
+      );
+      break;
+  }
+
+  return arr;
+};

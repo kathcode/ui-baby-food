@@ -5,10 +5,11 @@ import type { FoodEntry, SortKey } from "../../types";
 import { EmptyList } from "../emptyList";
 import { useMemo } from "react";
 import { EntryItem } from "../entryList/EntryItem";
+import { sortFood } from "../../utils/foods";
 
 export function EntryList({
   entries,
-  sortBy,
+  sortBy = "newest",
   onEdit,
   onDelete,
   onCreate,
@@ -21,29 +22,8 @@ export function EntryList({
 }) {
   const sorted = useMemo(() => {
     const arr = [...entries];
-    switch (sortBy) {
-      case "newest":
-        arr.sort((a, b) => b.date.getTime() - a.date.getTime());
-        break;
-      case "oldest":
-        arr.sort((a, b) => a.date.getTime() - b.date.getTime());
-        break;
-      case "rating_desc":
-        arr.sort(
-          (a, b) =>
-            (b.rating ?? 0) - (a.rating ?? 0) ||
-            b.date.getTime() - a.date.getTime()
-        );
-        break;
-      case "rating_asc":
-        arr.sort(
-          (a, b) =>
-            (a.rating ?? 0) - (b.rating ?? 0) ||
-            b.date.getTime() - a.date.getTime()
-        );
-        break;
-    }
-    return arr;
+    const sortedFood = sortFood(arr, sortBy);
+    return sortedFood;
   }, [entries, sortBy]);
 
   const today = new Date();
